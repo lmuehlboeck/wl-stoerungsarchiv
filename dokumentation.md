@@ -25,30 +25,28 @@ Das Frontend ist eine VueJS-Website, welche die Daten aus der Rest-API ausliest 
 
 Die SQLite3-Datenbank hat folgenden Aufbau:
 
-![datenbankstruktur](.\datenbankstruktur.png)
+![datenbankstruktur](./datenbankstruktur.png)
 
-- Tabelle `failures`: Hier sind alle Störungen gespeichert
+- Tabelle `disturbances`: Hier sind alle Störungen gespeichert
 
   - `id` wird aus der API übernommen, um die Störungen bei Aktualisierung mit dem Wiener Linien Server wieder eindeutig identifizieren zu können
   - `title` ist der Titel der Störung
   - `start_time` ist der Zeitpunkt, an dem die Störung begonnen hat
   - `end_time` ist der Zeitpunkt, an dem die Störung komplett behoben ist - wird ausgefüllt, sobald die Störung am Wiener Linien Server gelöscht ist
-
 - Tabelle `descriptions`: Hier sind alle Beschreibungen der Störungen gespeichert. Da sich die Beschreibung einer Störung im Laufe der Zeit ändert, werden manchmal mehrere Beschreibungen zu einer Störung gespeichert (z. B. von kein Betrieb zu Verspätungen)
 
-  - `failure_id` ist die `id` der Zugehörigen Störung
+  - `disturbance_id` ist die `id` der zugehörigen Störung
   - `description` ist die Beschreibung
   - `time` ist der Zeitpunkt, an dem die Beschreibung aktuell gültig war
-
 - Tabelle `lines`: Hier werden betroffene Linien gespeichert
 
   - `id` ist eine eindeutige Identifikation für die Linie
   - `name` ist der Name (Nummer) der Linie (z.B. 31, 32A, U6, ...)
   - `type` ist der Typ der Linie (`ptBusCity` = Bus, `ptTram` = Straßenbahn, `ptMetro` = U-Bahn)
+- Tabelle `disturbances_lines`: Hier werden die Linien zu den Störungen gespeichert (um many-many Beziehung zu ermöglichen)
 
-- Tabelle `failures_lines`: Hier werden die Linien zu den Störungen gespeichert (um many-many Beziehung zu ermöglichen)
-
-  - `failure_id` ist die `id` der Störung
+  - `disturbances_id` ist die `id` der Störung
   - `line_id` ist die `id` der Linie
 
-  
+
+Die Datenbank wird über das Create-Script `backend/scheme.sql` erstellt.
