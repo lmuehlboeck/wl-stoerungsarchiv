@@ -31,18 +31,35 @@ Die SQLite3-Datenbank hat folgenden Aufbau:
 
   - `id` wird aus der API übernommen, um die Störungen bei Aktualisierung mit dem Wiener Linien Server wieder eindeutig identifizieren zu können
   - `title` ist der Titel der Störung
+  - `type` ist der Typ der Störung
+    - 0 für Verspätungen
+    - 1 für Verkehrsunfall
+    - 2 für schadhaftes Fahrzeug
+    - 3 für Gleisschaden
+    - 4 für Weichenschaden
+    - 5 für Fahrleitungsgebrechen
+    - 6 für Signalstörung
+    - 7 für Rettungseinsatz
+    - 8 für Polizeieinsatz
+    - 9 für Feuerwehreinsatz
+    - 10 für Falschparker
+    - 11 für Demonstration
+    - 12 für Veranstaltung
+    - 13 für Sonstige
   - `start_time` ist der Zeitpunkt, an dem die Störung begonnen hat
-  - `end_time` ist der Zeitpunkt, an dem die Störung komplett behoben ist - wird ausgefüllt, sobald die Störung am Wiener Linien Server gelöscht ist
-- Tabelle `descriptions`: Hier sind alle Beschreibungen der Störungen gespeichert. Da sich die Beschreibung einer Störung im Laufe der Zeit ändert, werden manchmal mehrere Beschreibungen zu einer Störung gespeichert (z. B. von kein Betrieb zu Verspätungen)
+  - `end_time` ist der Zeitpunkt, an dem die Störung komplett behoben ist - ist NULL wenn die Störung noch aktuell ist und wird erst ausgefüllt, sobald die Störung am Wiener Linien Server gelöscht ist
+- Tabelle `disturbance_descriptions`: Hier sind alle Beschreibungen einer Störungen gespeichert. Da sich die Beschreibung einer Störung im Laufe der Zeit ändert, werden manchmal mehrere Beschreibungen zu einer Störung gespeichert (z. B. von kein Betrieb zu Verspätungen)
 
   - `disturbance_id` ist die `id` der zugehörigen Störung
   - `description` ist die Beschreibung
   - `time` ist der Zeitpunkt, an dem die Beschreibung aktuell gültig war
-- Tabelle `lines`: Hier werden betroffene Linien gespeichert
+- Tabelle `lines`: Hier werden alle (jemals) betroffenen Linien gespeichert
 
-  - `id` ist eine eindeutige Identifikation für die Linie
-  - `name` ist der Name (Nummer) der Linie (z.B. 31, 32A, U6, ...)
-  - `type` ist der Typ der Linie (`ptBusCity` = Bus, `ptTram` = Straßenbahn, `ptMetro` = U-Bahn)
+  - `id` ist die eindeutige Identifikation für die Linie (z.B. 31, 32A, U6, ...)
+  - `type` ist der Typ der Linie
+    - 0 für Bus
+    - 1 für Straßenbahn
+    - 2 für U-Bahn
 - Tabelle `disturbances_lines`: Hier werden die Linien zu den Störungen gespeichert (um many-many Beziehung zu ermöglichen)
 
   - `disturbances_id` ist die `id` der Störung
