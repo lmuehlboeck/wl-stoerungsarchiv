@@ -2,7 +2,7 @@
 
 Verfasser: **Leo Mühlböck**
 
-Datum: **08.10.2022**
+Datum: **25.10.2022**
 
 ## Einführung
 
@@ -36,7 +36,7 @@ Die SQLite3-Datenbank hat folgenden Aufbau:
     - 1 für Verkehrsunfall
     - 2 für schadhaftes Fahrzeug
     - 3 für Gleisschaden
-    - 4 für Weichenschaden
+    - 4 für Weichenstörung
     - 5 für Fahrleitungsgebrechen
     - 6 für Signalstörung
     - 7 für Rettungseinsatz
@@ -65,5 +65,18 @@ Die SQLite3-Datenbank hat folgenden Aufbau:
   - `disturbances_id` ist die `id` der Störung
   - `line_id` ist die `id` der Linie
 
-
 Die Datenbank wird über das Create-Script `backend/scheme.sql` erstellt.
+
+### Störungsaufzeichnung
+
+Für die Aufzeichnung der Störungen ist das Python-Skript `backend/update_db.py` zuständig. Es wird auf einem Server in periodischen Zeitabständen ausgeführt (2-5 Minuten - je größer desto mehr leidet die Genauigkeit von `end_time`). Als Vorschlag wird hier die Datei `update_db.cron` mitgeliefert, die angepasst in `/etc/cron.d/` gelegt werden kann und auf Linux-Systemen eine einfache periodische Ausführung ermöglicht.
+
+Die Funktionsweise ist simpel: Es werden die aktuellen Störungen aus der Wiener Linien API geholt und mit der lokalen Datenbank abgeglichen. Dabei gibt es drei Fälle:
+
+1. Eine Störung ist neu (also noch nicht in der Datenbank): Sie wird mit den wichtigsten Daten in `disturbances` gespeichert, die zugehörige Beschreibung in `disturbance_descriptions` und die betroffenen Linien in `disturbances_lines` (wenn es eine noch nicht bekannte Linie ist auch in `lines`)
+2. Eine Störung ist aktuell (bereits in der Datenbank): Die Beschreibung der Störung wird mit der aktuellsten in der Datenbank abgeglichen. Wenn diese nicht gleich sind, wird die aktuelle Beschreibung als neuer Eintrag in `disturbance_descriptions` gespeichert. 
+3. Eine Störung ist vorbei (in der Datenbank aber nicht mehr in der API): Die `end_time` der betroffenen Störung wird gesetzt.
+
+## Quellen
+
+*Wiener Linien realtime | Schnittstellendokumentation*. Available at: https://www.wienerlinien.at/ogd_realtime/doku/ogd/wienerlinien-echtzeitdaten-dokumentation.pdf (Accessed: October 24, 2022). 
