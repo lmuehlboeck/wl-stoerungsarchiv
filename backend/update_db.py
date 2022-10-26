@@ -9,11 +9,12 @@ This script
 
 import sqlite3, requests
 from datetime import datetime
-from db_management import conn, execute_query
+from db_management import get_conn, execute_query
 
 
 API_URL = "https://www.wienerlinien.at/ogd_realtime/trafficInfoList?name=stoerunglang"
 
+conn = get_conn()
 
 def get_disturbance_type(title):
     key = title.split(" ")[-1]
@@ -50,28 +51,28 @@ def main():
     
     disturbances = res.json()["data"]["trafficInfos"]
     for disturbance in disturbances:
-        if execute_query("SELECT * FROM disturbances WHERE end_time IS NULL AND id=?", (disturbance["name"],)):
+        if execute_query(conn, "SELECT * FROM disturbances WHERE end_time IS NULL AND id=?", (disturbance["name"],)):
             # disturbance is already saved - check for description updates
-            desc_old = execute_query("SELECT description FROM disturbance_descriptions WHERE disturbance_id=? ORDER BY time DESC", (disturbance["name"],), True)[0]
+            desc_old = execute_query(conn, "SELECT description FROM disturbance_descriptions WHERE disturbance_id=? ORDER BY time DESC", (disturbance["name"],))[0][0]
             if desc_old != disturbance["description"]:
-                execute_query("INSERT INTO disturbance_descriptions(disturbance_id, description, time) VALUES(?, ?, ?)",
+                execute_query(conn, "INSERT INTO disturbance_descriptions(disturbance_id, description, time) VALUES(?, ?, ?)",
                     (disturbance["name"], disturbance["description"], datetime.now()))
         else:
             # disturbance is new
-            execute_query("INSERT INTO disturbances(id, title, type, start_time) VALUES(?, ?, ?, ?)",
+            execute_query(conn, "INSERT INTO disturbances(id, title, type, start_time) VALUES(?, ?, ?, ?)",
                 (disturbance["name"], disturbance["title"], get_disturbance_type(disturbance["title"]), datetime.fromisoformat(disturbance["time"]["start"][0:-5])))
-            execute_query("INSERT INTO disturbance_descriptions(disturbance_id, description, time) VALUES(?, ?, ?)",
+            execute_query(conn, "INSERT INTO disturbance_descriptions(disturbance_id, description, time) VALUES(?, ?, ?)",
                 (disturbance["name"], disturbance["description"], datetime.now()))
             for line, type in disturbance["attributes"]["relatedLineTypes"].items():
-                execute_query("INSERT OR IGNORE INTO lines(id, type) VALUES (?, ?)",
-                    (line, get_line_type(type)))
-                execute_query("INSERT INTO disturbances_lines(disturbance_id, line_id) VALUES (?, ?)", 
-                    (disturbance["name"], line))
+                execute_query(conn, "INSERT OR IGNORE INTO lines(id, type) VALUES (?, ?)",
+                    (line.strip(), get_line_type(type)))
+                execute_query(conn, "INSERT INTO disturbances_lines(disturbance_id, line_id) VALUES (?, ?)", 
+                    (disturbance["name"], line.strip()))
     # close all deleted disturbances
-    open_disturbances = execute_query("SELECT id FROM disturbances WHERE end_time IS NULL")
+    open_disturbances = execute_query(conn, "SELECT id FROM disturbances WHERE end_time IS NULL")
     for open_disturbance in open_disturbances:
         if not any(d["name"] == open_disturbance[0] for d in disturbances):
-            execute_query("UPDATE disturbances SET end_time=? WHERE id=?", (datetime.now(), open_disturbance[0]))
+            execute_query(conn, "UPDATE disturbances SET end_time=? WHERE id=?", (datetime.now(), open_disturbance[0]))
         
 
 if __name__ == "__main__":
