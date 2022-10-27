@@ -69,13 +69,37 @@ Die Datenbank wird über das Create-Script `backend/scheme.sql` erstellt.
 
 ### Störungsaufzeichnung
 
-Für die Aufzeichnung der Störungen ist das Python-Skript `backend/update_db.py` zuständig. Es wird auf einem Server in periodischen Zeitabständen ausgeführt (2-5 Minuten - je größer desto mehr leidet die Genauigkeit von `end_time`). Als Vorschlag wird hier die Datei `update_db.cron` mitgeliefert, die angepasst in `/etc/cron.d/` gelegt werden kann und auf Linux-Systemen eine einfache periodische Ausführung ermöglicht.
+Für die Aufzeichnung der Störungen ist das Python-Skript `backend/update_db.py` zuständig. Es wird auf einem Server in periodischen Zeitabständen ausgeführt (2-5 Minuten - je größer desto mehr leidet die Genauigkeit von `end_time`). Eine Möglichkeit die periodische Ausführung umzusetzen ist weiter unten angeführt.
 
 Die Funktionsweise ist simpel: Es werden die aktuellen Störungen aus der Wiener Linien API geholt und mit der lokalen Datenbank abgeglichen. Dabei gibt es drei Fälle:
 
 1. Eine Störung ist neu (also noch nicht in der Datenbank): Sie wird mit den wichtigsten Daten in `disturbances` gespeichert, die zugehörige Beschreibung in `disturbance_descriptions` und die betroffenen Linien in `disturbances_lines` (wenn es eine noch nicht bekannte Linie ist auch in `lines`)
 2. Eine Störung ist aktuell (bereits in der Datenbank): Die Beschreibung der Störung wird mit der aktuellsten in der Datenbank abgeglichen. Wenn diese nicht gleich sind, wird die aktuelle Beschreibung als neuer Eintrag in `disturbance_descriptions` gespeichert. 
 3. Eine Störung ist vorbei (in der Datenbank aber nicht mehr in der API): Die `end_time` der betroffenen Störung wird gesetzt.
+
+#### Periodische Ausführung mit cron
+
+Auf Linux-Systemen eine periodische Ausführung mittels cron-Tabs realisiert werden. Meistens ist cron schon installiert - doch zur Sicherheit, hier der Installationsbefehl:
+
+```bash
+sudo apt install cron
+```
+
+Um einen cron-Tab einzurichten, wird zunächst folgender Befehl ausgeführt:
+
+```bash
+crontab -e
+```
+
+Es öffnet sich eine Datei im Texteditor. Am Ende dieser Datei wird folgende Zeile angefügt:
+
+```
+*/2 * * * * cd /pfad/zum/backend && /pfad/zu/python3 /pfad/zu/update_db.py
+```
+
+Es sind natürlich alle Pfade entsprechend anzupassen. Die erste Zahl (hier 2) gibt den Zeitabstand zwischen den Ausführungen in Minuten an.
+
+Datei speichern & schließen.
 
 ### API
 

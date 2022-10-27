@@ -1,5 +1,0 @@
-# run script every 5 minutes
-*/5 * * * *   user  python /path/to/update_db.py
-
-# run script after system (re)boot
-@reboot       user  python /path/to/update_db.py
