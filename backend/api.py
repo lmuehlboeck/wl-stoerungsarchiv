@@ -26,6 +26,7 @@ def api_get_disturbances():
     # args
     lines = request.args.get("line", type=str)
     types = request.args.get("type", type=str)
+    active = request.args.get("active", type=str)
     try:
         start_date = to_date(request.args.get("start"))
         end_date = to_date(request.args.get("end"))
@@ -45,6 +46,10 @@ def api_get_disturbances():
         types = types.split(",")
         sql += f" AND type IN ({','.join(['?'] * len(types))})"
         args += types
+    if active and active == "true":
+        sql += " AND end_time IS NULL"
+    elif active and active != "false":
+        return {"error": {"code": 400, "message": f"{active} is not a valid boolean value"}}
     if start_date:
         sql += " AND start_time >= ?"
         args.append(start_date)
@@ -70,9 +75,9 @@ def api_get_disturbances():
     disturbances = execute_query(get_db(), sql, tuple(args))
     if disturbances:
         for disturbance in disturbances:
-            # disctionary of descriptions
+            # list of descriptions
             desc_db = execute_query(get_db(), "SELECT description, time FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
-            desc_list = {d[0]: d[1] for d in desc_db}
+            desc_list = [{"description":d[0], "time":d[1]} for d in desc_db]
 
             # dictionary of lines
             lines_db = execute_query(get_db(), "SELECT line_id FROM disturbances_lines WHERE disturbance_id=?", (disturbance[0],))

@@ -113,3 +113,4 @@ Damit das Frontend auf die Daten in der Datenbank zugreifen kann, ist die REST-A
 
 *Using SQLite 3 with Flask - Flask Documentation (2.2)*. Available at: https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/ (Accessed: October 27, 2022). 
 
+https://stackoverflow.com/
