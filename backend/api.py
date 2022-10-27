@@ -70,9 +70,9 @@ def api_get_disturbances():
     disturbances = execute_query(get_db(), sql, tuple(args))
     if disturbances:
         for disturbance in disturbances:
-            # list of descriptions
-            desc_db = execute_query(get_db(), "SELECT description FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
-            desc_list = [d[0] for d in desc_db]
+            # disctionary of descriptions
+            desc_db = execute_query(get_db(), "SELECT description, time FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
+            desc_list = {d[0]: d[1] for d in desc_db}
 
             # dictionary of lines
             lines_db = execute_query(get_db(), "SELECT line_id FROM disturbances_lines WHERE disturbance_id=?", (disturbance[0],))

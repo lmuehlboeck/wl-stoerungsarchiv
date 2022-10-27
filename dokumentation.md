@@ -77,6 +77,15 @@ Die Funktionsweise ist simpel: Es werden die aktuellen Störungen aus der Wiener
 2. Eine Störung ist aktuell (bereits in der Datenbank): Die Beschreibung der Störung wird mit der aktuellsten in der Datenbank abgeglichen. Wenn diese nicht gleich sind, wird die aktuelle Beschreibung als neuer Eintrag in `disturbance_descriptions` gespeichert. 
 3. Eine Störung ist vorbei (in der Datenbank aber nicht mehr in der API): Die `end_time` der betroffenen Störung wird gesetzt.
 
+### API
+
+Damit das Frontend auf die Daten in der Datenbank zugreifen kann, ist die REST-API `api.py` notwendig. Sie wurde mittels dem Python-Package Flask umgesetzt. Die Dokumentation der API-Endpunkte ist in der README zu finden.
+
 ## Quellen
 
 *Wiener Linien realtime | Schnittstellendokumentation*. Available at: https://www.wienerlinien.at/ogd_realtime/doku/ogd/wienerlinien-echtzeitdaten-dokumentation.pdf (Accessed: October 24, 2022). 
+
+*SQLite cheat sheet* (2020) *SQLite Tutorial*. Available at: https://www.sqlitetutorial.net/sqlite-cheat-sheet/ (Accessed: October 27, 2022). 
+
+*Using SQLite 3 with Flask - Flask Documentation (2.2)*. Available at: https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/ (Accessed: October 27, 2022). 
+
