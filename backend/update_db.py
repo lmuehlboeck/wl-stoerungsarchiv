@@ -51,8 +51,9 @@ def main():
     
     disturbances = res.json()["data"]["trafficInfos"]
     for disturbance in disturbances:
-        if execute_query(conn, "SELECT * FROM disturbances WHERE end_time IS NULL AND id=?", (disturbance["name"],)):
+        if execute_query(conn, "SELECT * FROM disturbances WHERE id=?", (disturbance["name"],)):
             # disturbance is already saved - check for description updates
+            execute_query(conn, "UPDATE disturbances SET end_time=NULL WHERE end_time IS NOT NULL AND id=?", (disturbance["name"],)) # important when disturbance reopened
             desc_old = execute_query(conn, "SELECT description FROM disturbance_descriptions WHERE disturbance_id=? ORDER BY time DESC", (disturbance["name"],))[0][0]
             if desc_old != disturbance["description"]:
                 execute_query(conn, "INSERT INTO disturbance_descriptions(disturbance_id, description, time) VALUES(?, ?, ?)",

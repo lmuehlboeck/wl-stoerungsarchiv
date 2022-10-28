@@ -18,3 +18,4 @@ def execute_query(conn, query, args=()):
         return res if res else None
     except:
         print("SQL query could not be executed")
+        return None
