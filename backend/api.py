@@ -11,11 +11,11 @@ def get_db():
         db = g._database = get_conn()
     return db
 
-def to_date(date_str):
+def convert_date(date_str):
     if not date_str:
         return None
     try:
-        return datetime.datetime.strptime(date_str, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        return datetime.datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:
         raise ValueError(f"{date_str} is not a valid date in the format YYYY-MM-DD")
 
@@ -28,8 +28,8 @@ def api_get_disturbances():
     types = request.args.get("type", type=str)
     active = request.args.get("active", type=str)
     try:
-        start_date = to_date(request.args.get("start"))
-        end_date = to_date(request.args.get("end"))
+        from_date = convert_date(request.args.get("from"))
+        to_date = convert_date(request.args.get("to"))
     except ValueError as exc:
         return {"error": {"code": 400, "message": str(exc)}}
     order = request.args.get("order", "start", type=str)
@@ -50,12 +50,12 @@ def api_get_disturbances():
         sql += " AND end_time IS NULL"
     elif active and active != "false":
         return {"error": {"code": 400, "message": f"{active} is not a valid boolean value"}}
-    if start_date:
+    if from_date:
         sql += " AND start_time >= ?"
-        args.append(start_date)
-    if end_date:
+        args.append(from_date)
+    if to_date:
         sql += " AND start_time <= ?"
-        args.append(end_date)
+        args.append(to_date.replace(hour=23, minute=59, second=59))
 
     # ordering
     if not order or order == "start":
@@ -79,17 +79,15 @@ def api_get_disturbances():
             desc_db = execute_query(get_db(), "SELECT description, time FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
             desc_list = [{"description":d[0], "time":d[1]} for d in desc_db]
 
-            # dictionary of lines
+            # list of lines
             lines_db = execute_query(get_db(), "SELECT line_id FROM disturbances_lines WHERE disturbance_id=?", (disturbance[0],))
-            lines_dict = {}
-            for l in lines_db:
-                lines_dict[l[0]] = execute_query(get_db(), "SELECT type FROM lines WHERE id=?", (l[0],))[0][0]
+            lines_list = [{"id":l[0], "type":execute_query(get_db(), "SELECT type FROM lines WHERE id=?", (l[0],))[0][0]} for l in lines_db]
             
             
             data.append({
                 "title": disturbance[1],
                 "descriptions": desc_list,
-                "lines": lines_dict,
+                "lines": lines_list,
                 "start_time": disturbance[3],
                 "end_time": disturbance[4],
             })
@@ -100,9 +98,9 @@ def api_get_disturbances():
 @app.route("/lines", methods=["GET"])
 def api_get_lines():
     data = {}
-    lines_db = execute_query(get_db(), "SELECT * FROM lines ORDER BY type")
-    for l in lines_db:
-        data[l[0]] = l[1]
+    # correct sorting - 1. type; 2. line number smallest to biggest - exception in metro rows because of incorrect casting
+    lines_db = execute_query(get_db(), "SELECT * FROM lines ORDER BY type, CASE WHEN id LIKE 'U%' THEN id ELSE cast(id as INTEGER) END")
+    data = [{"id":l[0], "type":l[1]} for l in lines_db]
     return {
         "data": data
     }
