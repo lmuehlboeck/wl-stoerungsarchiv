@@ -19,7 +19,7 @@ def convert_date(date_str):
     except ValueError:
         raise ValueError(f"{date_str} is not a valid date in the format YYYY-MM-DD")
 
-@app.route("/disturbances", methods=["GET"])
+@app.route("/api/disturbances", methods=["GET"])
 def api_get_disturbances():
     data = []
 
@@ -95,7 +95,7 @@ def api_get_disturbances():
         "data": data
     }
 
-@app.route("/lines", methods=["GET"])
+@app.route("/api/lines", methods=["GET"])
 def api_get_lines():
     data = {}
     # correct sorting - 1. type; 2. line number smallest to biggest - exception in metro rows because of incorrect casting
