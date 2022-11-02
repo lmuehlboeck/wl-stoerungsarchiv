@@ -22,4 +22,9 @@ export default {
 * {
   font-family: "Montserrat";
 }
+
+html {
+  background-color: #F8F8F8;
+  overflow: hidden;
+}
 </style>
