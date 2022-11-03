@@ -25,6 +25,6 @@ export default {
 
 html {
   background-color: #F8F8F8;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 </style>
