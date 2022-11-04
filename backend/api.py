@@ -1,9 +1,11 @@
 from flask import Flask, g, request
+from flask_cors import CORS
 from db_management import get_conn, execute_query
 import datetime
 
 
 app = Flask(__name__)
+CORS(app)
 
 def get_db():
     db = getattr(g, '_database', None)
