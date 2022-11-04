@@ -54,8 +54,8 @@ Beispiel: `https://wls.byleo.net/api/disturbances?line=U6,26&type=1,7,8,9&start=
 | line      | Liste von str | Filtert die Störungen nach den angegebenen Linien            | alle    |
 | type      | Liste von int | Filtert die Störungen nach den angegebenen Störungstypen (Kodierung siehe [oben](#Störungstypen)) | alle    |
 | active    | bool          | Wenn true wird nach aktuellen Störungen gefiltert (also Störungen, die noch nicht beendet sind) | false   |
-| start     | date          | Filtert alle Störungen, die vor dem angegebenen Datum begonnen haben, heraus | null    |
-| end       | date          | Filtert alle Störungen, die nach dem angegebenen Datum begonnen haben, heraus | null    |
+| start     | date          | Filtert alle Störungen, die vor dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
+| end       | date          | Filtert alle Störungen, die nach dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
 | order     | str           | Sortiert die Störungen nach dem angegebenen Attribut. Gültige Werte: start, end, type | start   |
 | desc      | bool          | Wenn true werden die Störungen je nach order-Parameter absteigend sortiert, ansonsten aufsteigend | true    |
 
@@ -74,6 +74,7 @@ Syntax:
         }
       ],
       "end_time": "end_time",
+      "id": "id",
       "lines": [
         {
           "id": "id",
@@ -104,6 +105,7 @@ Beispiel:
         }
       ],
       "end_time": "2022-10-27 21:48:01.816828",
+      "id": "bms_202210270049",
       "lines": [
         {
           "id": "26",
@@ -130,3 +132,53 @@ Beispiel:
 | start_time   | datetime           | Zeitpunkt an dem die Störung begonnen hat                    |
 | title        | str                | Titel der Störung                                            |
 
+### Störung by ID
+
+#### Request
+
+Syntax: `https://wls.byleo.net/api/disturbances/<id>`
+
+Beispiel:  `https://wls.byleo.net/api/disturbances/bms_202210270049`
+
+#### Response
+
+Syntax gleich wie oben, nur dass nur ein Störungs-Objekt zurück geliefert wird.
+
+### Linien
+
+#### Request
+
+URL: `https://wls.byleo.net/api/lines`
+
+#### Response
+
+Syntax:
+
+```json
+{
+    "data": [
+        {
+            "id": "id",
+            "type": "type"
+        }
+    ]
+}
+```
+
+Beispiel:
+
+```json
+{
+    "data": [
+        {
+            "id": "26",
+            "type": "1"
+        }
+    ]
+}
+```
+
+| Attribut | Datentyp | Beschreibung                                         |
+| -------- | -------- | ---------------------------------------------------- |
+| id       | str      | Bezeichnung der Linie                                |
+| type     | int      | Typ der Linie (Kodierung siehe [oben](#Linientypen)) |

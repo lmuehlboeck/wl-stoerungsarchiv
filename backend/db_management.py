@@ -16,6 +16,6 @@ def execute_query(conn, query, args=()):
         conn.commit()
         cur.close()
         return res if res else None
-    except:
-        print("SQL query could not be executed")
+    except Exception as e:
+        print("SQL query could not be executed: " + str(e))
         return None

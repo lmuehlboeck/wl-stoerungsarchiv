@@ -19,6 +19,34 @@ def convert_date(date_str):
     except ValueError:
         raise ValueError(f"{date_str} is not a valid date in the format YYYY-MM-DD")
 
+def generate_disturbance_object(disturbance):
+    # list of descriptions
+    desc_db = execute_query(get_db(), "SELECT description, time FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
+    desc_list = [{"description":d[0], "time":d[1]} for d in desc_db]
+
+    # list of lines
+    lines_db = execute_query(get_db(), "SELECT line_id FROM disturbances_lines WHERE disturbance_id=?", (disturbance[0],))
+    lines_list = [{"id":l[0], "type":execute_query(get_db(), "SELECT type FROM lines WHERE id=?", (l[0],))[0][0]} for l in lines_db]
+    
+    return {
+        "id": disturbance[0],
+        "title": disturbance[1],
+        "descriptions": desc_list,
+        "lines": lines_list,
+        "start_time": disturbance[3],
+        "end_time": disturbance[4],
+    }
+
+@app.route("/api/disturbances/<id>", methods=["GET"])
+def api_get_disturbance_by_id(id):
+    dist = execute_query(get_db(), "SELECT * FROM disturbances WHERE id=?", (id,))
+    if dist:
+        return {
+            "data": generate_disturbance_object(dist[0])
+        }
+    else:
+        return {"error": {"code": 404, "message": f"No disturbance with id {id} found"}}
+
 @app.route("/api/disturbances", methods=["GET"])
 def api_get_disturbances():
     data = []
@@ -75,22 +103,7 @@ def api_get_disturbances():
     disturbances = execute_query(get_db(), sql, tuple(args))
     if disturbances:
         for disturbance in disturbances:
-            # list of descriptions
-            desc_db = execute_query(get_db(), "SELECT description, time FROM disturbance_descriptions WHERE disturbance_id=?", (disturbance[0],))
-            desc_list = [{"description":d[0], "time":d[1]} for d in desc_db]
-
-            # list of lines
-            lines_db = execute_query(get_db(), "SELECT line_id FROM disturbances_lines WHERE disturbance_id=?", (disturbance[0],))
-            lines_list = [{"id":l[0], "type":execute_query(get_db(), "SELECT type FROM lines WHERE id=?", (l[0],))[0][0]} for l in lines_db]
-            
-            
-            data.append({
-                "title": disturbance[1],
-                "descriptions": desc_list,
-                "lines": lines_list,
-                "start_time": disturbance[3],
-                "end_time": disturbance[4],
-            })
+            data.append(generate_disturbance_object(disturbance))
     return {
         "data": data
     }
