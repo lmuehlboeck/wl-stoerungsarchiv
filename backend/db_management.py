@@ -15,7 +15,7 @@ def execute_query(conn, query, args=()):
         res = cur.fetchall()
         conn.commit()
         cur.close()
-        return res if res else None
+        return res if res else []
     except Exception as e:
         print("SQL query could not be executed: " + str(e))
         return None
