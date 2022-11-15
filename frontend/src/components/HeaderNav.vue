@@ -11,8 +11,7 @@
         <li><a class="q-py-sm q-px-md" href="/infos">Infos</a></li>
         <li><a class="q-py-sm q-px-md" href="/impressum">Impressum</a></li>
       </ul>
-      <q-btn flat round icon="menu" size="lg" class="lt-md" @click="showMenu = !showMenu" v-show="!showMenu" />
-      <q-btn flat round icon="close" size="lg" class="lt-md" @click="showMenu = !showMenu" v-show="showMenu" />
+      <q-btn flat round :icon="showMenu ? 'close' : 'menu'" size="lg" class="lt-md" @click="showMenu = !showMenu" />
     </nav>
   </div>
   <Transition>

@@ -17,7 +17,15 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@font-face {
+  font-family: "Montserrat";
+  src: local("Montserrat"),   url(../public/fonts/Montserrat-Regular.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "Montserrat bold";
+  src: local("Montserrat bold"),   url(../public/fonts/Montserrat-SemiBold.ttf) format("truetype");
+}
 
 * {
   font-family: "Montserrat";
@@ -26,5 +34,9 @@ export default {
 html {
   background-color: #F8F8F8;
   overflow-x: hidden;
+}
+
+.bold {
+  font-family: "Montserrat bold";
 }
 </style>

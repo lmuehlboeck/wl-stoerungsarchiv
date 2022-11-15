@@ -4,8 +4,8 @@
   </header>
   <main class="q-my-lg">
     <div class="q-mx-auto col-8 row" style="max-width: 1100px">
-      <FilterSortPanel class="col-md-4 col-12" @change="fetchDisturbances" />
-      <DisturbancesPanel class="col-md-8 col-12" />
+      <FilterSortPanel class="col-md-4 col-12" :getLineColor="getLineColor" @change="updateDisturbances" />
+      <DisturbancesPanel class="col-md-8 col-12" :getLineColor="getLineColor" ref="distPanel" />
     </div>
   </main>
 </template>
@@ -26,31 +26,20 @@ export default {
 
   methods: {
     updateDisturbances (params) {
-
+      this.$refs.distPanel.update(params)
     },
 
-    async fetchDisturbances (params) {
-      try {
-        // date parsing
-        const fromDateArr = params.fromDate.split('.')
-        const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}}`
-        const toDateArr = params.toDate.split('.')
-        const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}}`
-
-        let url = `https://wls.byleo.net/api/disturbances?from=${fromDate}&to=${toDate}&${params.sort.value}type=${params.types.toString()}&line=${params.lines.toString()}`
-        if (params.onlyOpenDisturbances) {
-          url += '&active=true'
-        }
-
-        const res = await fetch(url)
-        const data = await res.json()
-        if (!('error' in data)) {
-          return data.data
-        }
-      } catch (err) {
-        console.log(err)
+    getLineColor (id, type) {
+      const colors = ['blue', 'red', 'grey', 'purple']
+      if (type === 2) {
+        if (id.includes('U1')) { return 'red' }
+        if (id.includes('U2')) { return 'pink' }
+        if (id.includes('U3')) { return 'orange' }
+        if (id.includes('U4')) { return 'green' }
+        if (id.includes('U5')) { return 'teal' }
+        if (id.includes('U6')) { return 'brown' }
       }
-      return null
+      return colors[type]
     }
   },
 
@@ -72,5 +61,11 @@ h2 {
 h3 {
   font-size: 1.125rem !important;
   margin: 0 !important;
+}
+h4 {
+  font-size: 1rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: "Montserrat bold";
 }
 </style>
