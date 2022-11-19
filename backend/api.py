@@ -114,7 +114,8 @@ def api_get_disturbances():
 def api_get_lines():
     data = {}
     # correct sorting - 1. type; 2. line number smallest to biggest (casting necessary) - except line number starts with U or N to ensure right casting
-    lines_db = execute_query(get_db(), "SELECT * FROM lines ORDER BY type, CASE WHEN id LIKE 'U%' OR id LIKE 'N%' THEN CAST(SUBSTR(id, 2) AS INTEGER) ELSE CAST(id AS INTEGER) END")
+    # also filter pointless lines like 'All Lines' or ''
+    lines_db = execute_query(get_db(), "SELECT * FROM lines WHERE id!='' AND id!='All Lines' ORDER BY type, CASE WHEN id LIKE 'U%' OR id LIKE 'N%' THEN CAST(SUBSTR(id, 2) AS INTEGER) ELSE CAST(id AS INTEGER) END")
     data = [{"id":l[0], "type":l[1]} for l in lines_db]
     return {
         "data": data
