@@ -1,4 +1,4 @@
-# Wiener Linien Störungshistorie - Dokumentation
+# Wiener Linien Störungsarchiv - Dokumentation
 
 Verfasser: **Leo Mühlböck**
 
@@ -10,7 +10,7 @@ Die Störungen der Wiener Linien sind ein praktischer Bestandteil der Wiener Lin
 
 ## Projektbeschreibung
 
-Die Wiener Linien Störungshistorie ist eine Applikation, welche die Störungen aus der Wiener Linien API ausliest, aufzeichnet und auf einer Website darstellt.
+Das Wiener Linien Störungsarchiv ist eine Applikation, welche die Störungen aus der Wiener Linien API ausliest, aufzeichnet und auf einer Website darstellt.
 
 Das Backend besteht aus zwei Teilen: 
 

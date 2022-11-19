@@ -1,8 +1,8 @@
-# Wiener Linien Störungshistorie
+# Wiener Linien Störungsarchiv
 
 Derzeit in Entwicklung ...
 
-Die Wiener Linien Störungshistorie speichert alle Störungen der Wiener Linien, um sie später auch noch einsehen zu können. Die Daten sind auf der Website einsehbar bzw. stehen auch über eine öffentlich zugängliche REST-API zu Verfügung.
+Das Wiener Linien Störungsarchiv speichert alle Störungen der Wiener Linien, um sie später auch noch einsehen zu können. Die Daten sind auf der Website einsehbar bzw. stehen auch über eine öffentlich zugängliche REST-API zu Verfügung.
 
 Website: https://wls.byleo.net/
 
