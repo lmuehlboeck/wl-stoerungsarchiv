@@ -6,7 +6,7 @@
           <q-icon name="tune" color="primary" class="q-mr-sm" />
           Sortieren & Filtern
         </h2>
-        <q-btn flat round :icon="expand ? 'expand_less' : 'expand_more'" size="lg" class="lt-md" @click="expand = !expand" />
+        <q-btn flat round icon="expand_more" size="lg" :class="expand ? 'lt-md rotate-180' : 'lt-md'" style="transition: .2s;" />
       </div>
       <div :class="expand ? '' : 'gt-sm'">
         <q-checkbox v-model="onlyOpenDisturbances" label="Nur offene Störungen anzeigen" @update:model-value="emitData()" />

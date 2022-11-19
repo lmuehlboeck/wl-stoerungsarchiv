@@ -1,8 +1,8 @@
 <template>
-  <div class="row justify-between items-center q-px-xl q-py-sm bg-white">
+  <div class="row justify-between items-center q-px-lg q-py-sm bg-white">
     <div class="column items-center">
       <span class="text-uppercase text-primary text-bold text-h6 full-width text-center">Wiener Linien</span>
-      <span class="text-uppercase text-subtitle1">Störungshistorie</span>
+      <span class="text-uppercase text-subtitle1">Störungsarchiv</span>
     </div>
     <nav>
       <ul class="gt-sm text-uppercase text-subtitle1 row" style="list-style: none" ref="desktopLinkList">
