@@ -41,13 +41,15 @@ export default {
   },
 
   mounted () {
-    const desktopLis = this.$refs.desktopLinkList.children
-    const mobileLis = this.$refs.mobileLinkList.children
+    if (this.activeIndex != null) {
+      const desktopLis = this.$refs.desktopLinkList.children
+      const mobileLis = this.$refs.mobileLinkList.children
 
-    desktopLis[this.activeIndex].firstChild.classList.add('bg-primary')
-    desktopLis[this.activeIndex].firstChild.classList.add('text-white')
-    mobileLis[this.activeIndex].firstChild.classList.add('bg-primary')
-    mobileLis[this.activeIndex].firstChild.classList.add('text-white')
+      desktopLis[this.activeIndex].firstChild.classList.add('bg-primary')
+      desktopLis[this.activeIndex].firstChild.classList.add('text-white')
+      mobileLis[this.activeIndex].firstChild.classList.add('bg-primary')
+      mobileLis[this.activeIndex].firstChild.classList.add('text-white')
+    }
   }
 }
 </script>
