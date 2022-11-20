@@ -6,16 +6,16 @@
     </div>
     <nav>
       <ul class="gt-sm text-uppercase text-subtitle1 row" style="list-style: none" ref="desktopLinkList">
-        <li><a class="q-py-sm q-px-md" href="/">Störungen</a></li>
-        <li><a class="q-py-sm q-px-md" href="/statistik">Statistik</a></li>
-        <li><a class="q-py-sm q-px-md" href="/infos">Infos</a></li>
-        <li><a class="q-py-sm q-px-md" href="/impressum">Impressum</a></li>
+        <li><a class="q-py-sm q-px-md q-ml-xs" href="/">Störungen</a></li>
+        <li><a class="q-py-sm q-px-md q-ml-xs" href="/statistik">Statistik</a></li>
+        <li><a class="q-py-sm q-px-md q-ml-xs" href="/infos">Infos</a></li>
+        <li><a class="q-py-sm q-px-md q-ml-xs" href="/impressum">Impressum</a></li>
       </ul>
       <q-btn flat round :icon="showMenu ? 'close' : 'menu'" size="lg" class="lt-md" @click="showMenu = !showMenu" />
     </nav>
   </div>
   <Transition>
-    <div class="z-max lt-md absolute full-width" style="background-color:rgba(255, 255, 255, 0.9)" v-show="showMenu">
+    <div class="z-max lt-md absolute full-width" style="background-color:rgba(255, 255, 255, 0.96)" v-show="showMenu">
       <ul class="text-uppercase text-subtitle1 column q-pa-none q-ma-none text-center" style="list-style: none" ref="mobileLinkList">
         <li><a class="q-py-lg full-width block" href="/">Störungen</a></li>
         <li><a class="q-py-lg full-width block" href="/statistik">Statistik</a></li>

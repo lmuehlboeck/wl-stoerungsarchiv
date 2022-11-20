@@ -19,13 +19,13 @@
         <h3>Störungstypen</h3>
         <q-btn-group class="full-width q-mb-sm">
           <q-btn text-color="black" size="sm" label="Alle auswählen" @click="selectAllTypes(); emitData()" class="col-6" />
-          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllTypes()" class="col-6" />
+          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllTypes(); emitData()" class="col-6" />
         </q-btn-group>
         <q-option-group v-model="types" :options="typeOptions" type="checkbox" class="q-ml-sm q-mb-sm" @update:model-value="emitData()" dense />
         <h3>Linien</h3>
         <q-btn-group class="full-width q-mb-sm">
           <q-btn text-color="black" size="sm" label="Alle auswählen" @click="selectAllLines(); emitData()" class="col-6" />
-          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllLines()" class="col-6" />
+          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllLines(); emitData()" class="col-6" />
         </q-btn-group>
         <div v-if="linesLoading" class="row justify-center">
           <q-spinner size="md" color="primary" />
