@@ -39,4 +39,23 @@ html {
 .bold {
   font-family: "Montserrat bold";
 }
+
+h1 {
+  font-size: 2rem !important;
+  margin: 0;
+}
+h2 {
+  font-size: 1.5rem !important;
+  margin: 0 !important;
+}
+h3 {
+  font-size: 1.125rem !important;
+  margin-bottom: 0;
+}
+h4 {
+  font-size: 1rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: "Montserrat bold";
+}
 </style>

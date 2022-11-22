@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import DiisturbanceView from '../views/DisturbanceView.vue'
+import StatisticsView from '../views/StatisticsView.vue'
+import InfosView from '../views/InfosView.vue'
+import ImprintView from '../views/ImprintView.vue'
+import DisturbanceView from '../views/DisturbanceView.vue'
 
 const routes = [
   {
@@ -9,9 +12,24 @@ const routes = [
     component: HomeView
   },
   {
+    path: '/statistik',
+    name: 'statistics',
+    component: StatisticsView
+  },
+  {
+    path: '/infos',
+    name: 'infos',
+    component: InfosView
+  },
+  {
+    path: '/impressum',
+    name: 'imprint',
+    component: ImprintView
+  },
+  {
     path: '/stoerung/:id',
     name: 'disturbance',
-    component: DiisturbanceView
+    component: DisturbanceView
   }
 ]
 

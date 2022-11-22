@@ -52,20 +52,5 @@ export default {
 </script>
 
 <style>
-h2 {
-  font-size: 1.5rem !important;
-  margin: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-}
-h3 {
-  font-size: 1.125rem !important;
-  margin: 0 !important;
-}
-h4 {
-  font-size: 1rem !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-family: "Montserrat bold";
-}
+
 </style>

@@ -16,7 +16,7 @@
           <DatePicker label="Von" :value="fromDate" class="col-6" @update:modelValue="updateFromDate" />
           <DatePicker label="Bis" :value="toDate" class="col-6" @update:modelValue="updateToDate"/>
         </div>
-        <h3>Störungstypen</h3>
+        <h3 class="q-mt-none">Störungstypen</h3>
         <q-btn-group class="full-width q-mb-sm">
           <q-btn text-color="black" size="sm" label="Alle auswählen" @click="selectAllTypes(); emitData()" class="col-6" />
           <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllTypes(); emitData()" class="col-6" />

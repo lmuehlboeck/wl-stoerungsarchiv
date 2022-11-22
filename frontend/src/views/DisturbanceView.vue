@@ -2,8 +2,8 @@
   <header>
     <HeaderNav />
   </header>
-  <main class="q-my-lg">
-    <div class="q-mx-auto col-8 bg-white shadow-4 rounded-borders q-pa-md" style="max-width: 1100px">
+  <main class="q-my-xl q-mx-md">
+    <div class="q-mx-auto col-8 bg-white shadow-4 rounded-borders q-pa-md" style="max-width: 800px">
       <div class="full-width">
         <h2>Störung {{$route.params.id}}</h2>
         <div v-if="loading" class="row justify-center">
