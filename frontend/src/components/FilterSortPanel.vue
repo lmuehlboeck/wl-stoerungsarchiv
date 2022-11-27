@@ -30,7 +30,10 @@
         <div v-if="linesLoading" class="row justify-center">
           <q-spinner size="md" color="primary" />
         </div>
-        <div class="row justify-center q-mr-xs" v-if="!linesLoading">
+        <div v-if="lineOptions == null" class="text-center text-grey">
+          Keine Verbindung zur API
+        </div>
+        <div class="row justify-center q-mr-xs" v-if="!linesLoading && lineOptions != null">
           <q-btn unelevated v-for="line in lineOptions" :key="line.id" :label="line.id" class="q-ml-xs q-mt-xs" style="width: 50px"
             :color="lines.includes(line.id) ? getLineColor(line.id, line.type) : 'grey-4'" @click="toggleLine(line.id); emitData()" />
         </div>
@@ -128,9 +131,11 @@ export default {
 
   async created () {
     this.lineOptions = await this.fetchLines()
-    this.selectAllLines()
+    if (this.lineOptions != null) {
+      this.selectAllLines()
+      this.emitData()
+    }
     this.linesLoading = false
-    this.emitData()
   },
 
   emits: ['change'],
