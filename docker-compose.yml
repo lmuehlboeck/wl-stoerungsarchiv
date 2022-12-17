@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    command: bash -c "service cron start && gunicorn --workers 4 --bind 0.0.0.0:5000 wsgi:app"
+    volumes:
+      - ./backend/data.db:/app/data.db
+    expose:
+      - 5000
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - 1337:80
+    depends_on:
+      - backend
+    environment:
+      - VIRTUAL_HOST=wls.byleo.net
+      - LETSENCRYPT_HOST=wls.byleo.net

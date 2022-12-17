@@ -105,9 +105,17 @@ Datei speichern & schließen.
 
 Damit das Frontend auf die Daten in der Datenbank zugreifen kann, ist die REST-API `api.py` notwendig. Sie wurde mittels dem Python-Package Flask umgesetzt. Die Dokumentation der API-Endpunkte ist in der README zu finden.
 
+### Deployment mit Docker
 
+Um die Störungsaufzeichnung und die API einzusetzen, wird ein bereits vorhandener Server verwendet. Dieser wurde auf [DeinServerHost](https://deinserverhost.de/) gemietet. 
+
+Das Betriebssystem ist Ubuntu20-64bit und es wurde bereits Docker und Docker Compose nach offiziellem Tutorial installiert. [1]
 
 ## Quellen
+
+[1] *Install Docker engine on ubuntu* (2022) *Docker Documentation*. Available at: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository (Accessed: November 29, 2022). 
+
+
 
 *Wiener Linien realtime | Schnittstellendokumentation*. Available at: https://www.wienerlinien.at/ogd_realtime/doku/ogd/wienerlinien-echtzeitdaten-dokumentation.pdf (Accessed: October 24, 2022). 
 
