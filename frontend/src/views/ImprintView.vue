@@ -9,7 +9,7 @@
         <p class="text-subtitle1">Leo Mühlböck<br>
         1210 Wien <br>
         Österreich</p>
-        <p class="text-subtitle1">E-Mail: <a href="mailto:mail@byleo.net">mail@byleo.net</a></p>
+        <p class="text-subtitle1">E-Mail: <a href="mailto:byleo@gmx.at">byleo@gmx.at</a></p>
         <h2>Datenschutzhinweis</h2>
         <p>Diese Website verwendet <b>keine</b> Cookies, weder Tracking-Cookies noch technische Cookies.</p>
         <h2>Datenquelle</h2>

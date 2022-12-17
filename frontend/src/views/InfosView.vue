@@ -12,12 +12,11 @@
         <h2>Motivation</h2>
         <p>
           Die Idee dieses Projekts hatte ich schon lange, jedoch ist es mir erst recht spät in den Sinn gekommen, das ganze selbst umzusetzen.
-          Ähnliche Websites exestieren bereits, allerdings haben sie entweder keine Filterfunktion, sind schlecht aufgebaut oder haben ein - naja - gewöhnungsbedürftiges Design.
-          Das wollte ich ändern (wobei natürlich auch auf dieser Website viel Luft nach oben ist).
+          Ähnliche Websites exestieren bereits, allerdings wollte ich das ganze mit meinen eigenen Vorstellungen (Filtern & Sortieren) umsetzen.
         </p>
         <p>
           Die Wiener Linien haben, so wie alle anderen ÖPNV-Betreiber auch, Störungen. Diese sind übersichtlich und aktuell auf der Website oder in der App einsehbar.
-          Doch nur solange sie aktuell sind - danach werden sie gelöscht. Es gibt Situationen, wo ein Einsehen in vergangene Störungen sehr nütlich sein kann.
+          Doch nur solange sie aktuell sind - danach werden sie gelöscht. Es gibt Situationen, wo ein Einsehen in vergangene Störungen sehr nützlich sein kann.
           Diese Funktionalität soll das Wiener Linien Störungsarchiv zur Verfügung stellen.
         </p>
       </div>
