@@ -6,8 +6,11 @@ services:
     command: bash -c "service cron start && gunicorn --workers 4 --bind 0.0.0.0:5000 wsgi:app"
     volumes:
       - ./backend/data.db:/app/data.db
+    networks:
+      - net
     expose:
       - 5000
+    restart: unless-stopped
   nginx:
     build:
       context: ./
@@ -19,3 +22,12 @@ services:
     environment:
       - VIRTUAL_HOST=wls.byleo.net
       - LETSENCRYPT_HOST=wls.byleo.net
+      - VIRTUAL_PORT=80
+    networks:
+      - net
+    restart: unless-stopped
+
+networks:
+  net:
+    name: net
+    external: true
