@@ -1,7 +1,7 @@
 <template>
   <div :class="'rounded-borders q-pa-sm q-my-xs' + (disturbance.descriptions.length > 1 ? ' cursor-pointer' : '')"
     style="border: 2px solid #E0E0E0;">
-    <div class="row justify-between">
+    <div class="no-wrap row justify-between">
       <div class="row items-center">
         <h4>{{disturbance.title}}</h4>
         <q-btn flat round icon="launch" size="sm" color="primary" :to="'/stoerung/' + disturbance.id" />
