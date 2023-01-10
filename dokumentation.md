@@ -131,7 +131,7 @@ Um die Störungsaufzeichnung zu realisieren und die API sowie das Frontend berei
 
 #### Struktur
 
-![docker_struktur](D:\OneDrive\Development\Web\wl-störungsarchiv\docker_struktur.png)
+![docker_struktur](docker_struktur.png)
 
 - **Nginx Reverse Proxy & Let's encrypt helper:** Der Reverse Proxy Container sorgt dafür, dass Anfragen von außen an die jeweiligen Nginx-Server Container weitergeleitet werden bzw. Responses nach außen geleitet werden. In diesem Fall verbindet er also den Container nginx mit dem Internet. Der Let's encrypt helper Container sorgt dafür, dass immer ein aktuelles SSL-Zertifikat für die Nginx-Container vorliegt, sodass die HTTPS-Website ohne Sicherheitswarnung aufgerufen werden kann.
 
