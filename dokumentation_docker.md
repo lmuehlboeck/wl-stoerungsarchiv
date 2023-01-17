@@ -14,7 +14,7 @@ Docker wird verwendet, um die Bereitstellung auf unterschiedlichen Systemen zu e
 
 Die Docker-Container Struktur ist hier visualisiert:
 
-![docker_struktur](D:\OneDrive\Development\Web\wl-störungsarchiv\docker_struktur.png)
+![docker_struktur](docker_struktur.png)
 
 Im Folgenden werden alle Teile etwas genauer beschrieben.
 
