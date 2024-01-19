@@ -41,9 +41,9 @@ Im Folgenden ist eine kleine Dokumentation zur API zu finden.
 
 #### Request
 
-Syntax: `https://wls.byleo.net/api/disturbances?line=<lines>&type=<types>&active=<bool>&start=<date>&end=<date>&order=<attr_name>&desc=<bool>`
+Syntax: `https://wls.byleo.net/api/disturbances?line=<lines>&type=<types>&active=<bool>&from=<date>&to=<date>&order=<attr_name>&desc=<bool>`
 
-Beispiel: `https://wls.byleo.net/api/disturbances?line=U6,26&type=1,7,8,9&start=2022-01-01&order=type&desc=false`
+Beispiel: `https://wls.byleo.net/api/disturbances?line=U6,26&type=1,7,8,9&from=2022-01-01&order=type&desc=false`
 
 = Alle Verkehrsunfälle, Polizei-, Feuerwehr- und Rettungseinsätze auf den Linien U6 und 26 ab dem 1.1.2022, aufsteigend sortiert nach dem Störungstyp.
 
@@ -52,8 +52,8 @@ Beispiel: `https://wls.byleo.net/api/disturbances?line=U6,26&type=1,7,8,9&start=
 | line      | Liste von str | Filtert die Störungen nach den angegebenen Linien            | alle    |
 | type      | Liste von int | Filtert die Störungen nach den angegebenen Störungstypen (Kodierung siehe [oben](#Störungstypen)) | alle    |
 | active    | bool          | Wenn true wird nach aktuellen Störungen gefiltert (also Störungen, die noch nicht beendet sind) | false   |
-| start     | date          | Filtert alle Störungen, die vor dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
-| end       | date          | Filtert alle Störungen, die nach dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
+| from      | date          | Filtert alle Störungen, die vor dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
+| to        | date          | Filtert alle Störungen, die nach dem angegebenen Datum begonnen haben, heraus<br />Format: YYYY-MM-DD | null    |
 | order     | str           | Sortiert die Störungen nach dem angegebenen Attribut. Gültige Werte: start, end, type | start   |
 | desc      | bool          | Wenn true werden die Störungen je nach order-Parameter absteigend sortiert, ansonsten aufsteigend | true    |
 
