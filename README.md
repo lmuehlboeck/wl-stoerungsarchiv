@@ -36,6 +36,7 @@ Im Folgenden ist eine kleine Dokumentation zur API zu finden.
 - 0 für Bus
 - 1 für Straßenbahn
 - 2 für U-Bahn
+- 3 für Sonstige
 
 ### Störungen
 
