@@ -8,6 +8,12 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import java.time.LocalDateTime
 
+private val LINE_ORDER: Array<Pair<Expression<*>, SortOrder>> = arrayOf(
+    Lines.type to SortOrder.ASC,
+    Lines.displayName.castTo<Int>(IntegerColumnType()) to SortOrder.ASC,
+    Lines.displayName to SortOrder.ASC
+)
+
 class Dao {
      private suspend fun resultRowToDisturbance(row: ResultRow) = Disturbance(
         id = row[Disturbances.disturbanceId],
@@ -33,10 +39,7 @@ class Dao {
     private suspend fun getLinesOfDisturbance(id: String): List<Line> = Database.dbQuery {
         (Lines innerJoin DisturbancesLines).select {
             DisturbancesLines.disturbanceId eq EntityID(id, Disturbances)
-        }.orderBy(
-            Lines.type to SortOrder.ASC,
-            Lines.displayName to SortOrder.ASC
-        ).map(::resultRowToLine)
+        }.orderBy(*LINE_ORDER).map(::resultRowToLine)
     }
 
     private suspend fun getDescriptionsOfDisturbance(id: String): List<Description> = Database.dbQuery {
@@ -74,7 +77,7 @@ class Dao {
     }
 
     suspend fun getLines(): List<Line> = Database.dbQuery {
-        Lines.selectAll().map(::resultRowToLine)
+        Lines.selectAll().orderBy(*LINE_ORDER).map(::resultRowToLine)
     }
 
     suspend fun getLineById(id: String): Line? = Database.dbQuery {
@@ -118,7 +121,7 @@ class Dao {
         val lines = disturbanceIds.associateBy({it}, { mutableListOf<Line>()})
         ((Disturbances innerJoin DisturbancesLines) innerJoin Lines).select {
             Disturbances.disturbanceId inList disturbanceIds
-        }.forEach {
+        }.orderBy(*LINE_ORDER).forEach {
             lines[it[Disturbances.disturbanceId]]?.add(
                 resultRowToLine(it)
             )
@@ -127,7 +130,7 @@ class Dao {
         val descriptions = disturbanceIds.associateBy({it}, { mutableListOf<Description>()})
         (Disturbances innerJoin DisturbanceDescriptions).select {
             Disturbances.disturbanceId inList disturbanceIds
-        }.forEach {
+        }.orderBy(DisturbanceDescriptions.time to SortOrder.ASC).forEach {
             descriptions[it[Disturbances.disturbanceId]]?.add(
                 resultRowToDescription(it)
             )
