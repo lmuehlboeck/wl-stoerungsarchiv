@@ -33,7 +33,11 @@ fun Application.module() {
     val updateInterval = environment.config.property("ktor.application.updateIntervalSec")
         .getString().toIntOrNull() ?: 60
     schedulerFlow(updateInterval.seconds).onEach {
-        updateDb()
+        try {
+            updateDb()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }.launchIn(CoroutineScope(Dispatchers.Default))
 
     configureSerialization()
