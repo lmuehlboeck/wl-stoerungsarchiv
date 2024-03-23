@@ -35,7 +35,9 @@ fun Application.module() {
     schedulerFlow(updateInterval.seconds).onEach {
         try {
             updateDb()
+            println("Updated database successfully!")
         } catch (e: Exception) {
+            println("Something went wrong while updating the database:")
             e.printStackTrace()
         }
     }.launchIn(CoroutineScope(Dispatchers.Default))
