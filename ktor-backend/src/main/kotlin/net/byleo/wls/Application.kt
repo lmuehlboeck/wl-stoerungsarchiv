@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import net.byleo.wls.data.Database
 import net.byleo.wls.plugins.*
+import net.byleo.wls.util.Scheduler
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,7 +33,7 @@ fun Application.module() {
 
     val updateInterval = environment.config.property("ktor.application.updateIntervalSec")
         .getString().toIntOrNull() ?: 60
-    schedulerFlow(updateInterval.seconds).onEach {
+    val scheduler = Scheduler {
         try {
             updateDb()
             println("Updated database successfully!")
@@ -40,7 +41,8 @@ fun Application.module() {
             println("Something went wrong while updating the database:")
             e.printStackTrace()
         }
-    }.launchIn(CoroutineScope(Dispatchers.Default))
+    }
+    scheduler.scheduleExecution(updateInterval.toLong(), java.util.concurrent.TimeUnit.SECONDS)
 
     configureSerialization()
     configureRouting()

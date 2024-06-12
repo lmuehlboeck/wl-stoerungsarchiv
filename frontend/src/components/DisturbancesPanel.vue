@@ -23,6 +23,7 @@ import DisturbanceDetails from './DisturbanceDetails.vue'
 
 export default {
   name: 'FilterSortPanel',
+  inject: ['$globals'],
 
   props: {
     getLineColor: Function
@@ -46,6 +47,7 @@ export default {
       this.disturbances = await this.fetchDisturbances(params)
       this.loading = false
     },
+
     async fetchDisturbances (params) {
       if (params.types.length === 0 || params.lines.length === 0) {
         return []
@@ -56,15 +58,11 @@ export default {
         const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`
         const toDateArr = params.toDate.split('.')
         const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`
-        let url = `https://wls.byleo.net/api/disturbances?from=${fromDate}&to=${toDate}&${params.sort.value}type=${params.types.toString()}&line=${params.lines.toString()}`
+        let url = `/disturbances?from=${fromDate}&to=${toDate}&${params.sort.value}types=${params.types.toString()}&lines=${params.lines.toString()}`
         if (params.onlyOpenDisturbances) {
           url += '&active=true'
         }
-        const res = await fetch(url)
-        const data = await res.json()
-        if (!('error' in data)) {
-          return data.data
-        }
+        return this.$globals.fetch(url)
       } catch (err) {
         console.log(err)
       }
