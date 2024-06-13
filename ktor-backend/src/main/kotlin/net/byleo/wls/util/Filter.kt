@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class DisturbanceFilter(
     val lines: List<String> = emptyList(),
     val types: List<Int> = emptyList(),
-    val active: Boolean = false,
+    val active: Boolean? = null,
     val from: LocalDateTime = LocalDateTime.now(),
     val to: LocalDateTime = LocalDateTime.now(),
     val order: OrderType = OrderType.START,

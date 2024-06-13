@@ -62,7 +62,7 @@ export default {
         if (params.onlyOpenDisturbances) {
           url += '&active=true'
         }
-        return this.$globals.fetch(url)
+        return (await this.$globals.fetch(url)).disturbances
       } catch (err) {
         console.log(err)
       }

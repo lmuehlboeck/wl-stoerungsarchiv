@@ -1,7 +1,9 @@
 package net.byleo.wls
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.cors.routing.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -19,14 +21,12 @@ fun main(args: Array<String>) {
     EngineMain.main(args)
 }
 
-fun schedulerFlow(interval: Duration) = flow {
-    while(true) {
-        delay(interval)
-        emit(Unit)
-    }
-}.buffer()
-
 fun Application.module() {
+    install(CORS) {
+        allowHeader(HttpHeaders.ContentType)
+        anyHost()
+    }
+
     val driverClassName = environment.config.property("ktor.storage.driverClassName").getString()
     val jdbcURL = environment.config.property("ktor.storage.jdbcURL").getString()
     Database.init(driverClassName, jdbcURL)

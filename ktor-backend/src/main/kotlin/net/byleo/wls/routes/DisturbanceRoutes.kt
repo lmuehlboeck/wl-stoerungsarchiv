@@ -15,6 +15,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
+
 fun Route.disturbanceRouting() {
     route("/disturbances") {
         get {
@@ -27,7 +28,7 @@ fun Route.disturbanceRouting() {
                     MessageResponse("Invalid type code $it")
                 )
             } ?: emptyList()
-            val active = call.request.queryParameters["active"]?.toBooleanStrictOrNull() ?: false
+            val active = call.request.queryParameters["active"]?.toBooleanStrictOrNull()
             val from = call.request.queryParameters["from"]?.let {
                 try { LocalDate.parse(it, formatter).atTime(LocalTime.MIN) } catch (e: DateTimeParseException) {
                     return@get call.respond(

@@ -48,6 +48,7 @@ import { ref } from 'vue'
 
 export default {
   name: 'FilterSortPanel',
+  inject: ['$globals'],
 
   props: {
     getLineColor: Function
@@ -117,11 +118,8 @@ export default {
 
     async fetchLines () {
       try {
-        const res = await fetch('https://wls.byleo.net/api/lines')
-        const data = await res.json()
-        if (!('error' in data)) {
-          return data.data
-        }
+        const data = await this.$globals.fetch('/lines')
+        return data.lines
       } catch (err) {
         console.log(err)
       }

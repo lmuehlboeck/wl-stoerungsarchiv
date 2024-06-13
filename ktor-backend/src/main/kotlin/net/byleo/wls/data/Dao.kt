@@ -104,8 +104,12 @@ class Dao {
         }
         if(filter.types.isNotEmpty())
             query.andWhere { Disturbances.type inList filter.types }
-        if(filter.active)
-            query.andWhere { Disturbances.endTime.isNull() }
+        filter.active?.let { active ->
+            if(active)
+                query.andWhere { if(active) Disturbances.endTime.isNull() else Disturbances.endTime.isNotNull() }
+            else
+                query.andWhere { Disturbances.endTime.isNotNull() }
+        }
         query.orderBy(
             Disturbances.endTime.isNull() to SortOrder.DESC,
             when(filter.order) {
