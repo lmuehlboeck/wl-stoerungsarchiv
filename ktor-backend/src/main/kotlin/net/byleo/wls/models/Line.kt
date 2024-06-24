@@ -3,6 +3,7 @@ package net.byleo.wls.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
@@ -16,6 +17,7 @@ object Lines: IdTable<String>() {
     val lineId = varchar("id", 255)
     val type = integer("type")
     val displayName = varchar("display_name", 255)
+    val hide = bool("hide").default(false)
 
     override val id = lineId.entityId()
     override val primaryKey = PrimaryKey(id)
@@ -23,5 +25,5 @@ object Lines: IdTable<String>() {
 
 object DisturbancesLines: Table() {
     val disturbanceId = reference("disturbance_id", Disturbances)
-    val lineId = reference("line_id", Lines)
+    val lineId = reference("line_id", Lines, onUpdate = ReferenceOption.CASCADE, onDelete = ReferenceOption.CASCADE)
 }

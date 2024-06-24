@@ -85,7 +85,7 @@ fun updateDb(): Unit = runBlocking {
             val title = disturbance["title"]!!.jsonPrimitive.content
             val lines = disturbance["attributes"]!!.jsonObject["relatedLineTypes"]!!.jsonObject.map {
                 Line(
-                    id = it.key,
+                    id = it.key.trim(),
                     type = lineTypeFromApi(it.value.jsonPrimitive.content)
                 )
             }

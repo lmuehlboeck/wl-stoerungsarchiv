@@ -77,7 +77,7 @@ class Dao {
     }
 
     suspend fun getLines(): List<Line> = Database.dbQuery {
-        Lines.selectAll().orderBy(*LINE_ORDER).map(::resultRowToLine)
+        Lines.select { Lines.hide eq false }.orderBy(*LINE_ORDER).map(::resultRowToLine)
     }
 
     suspend fun getLineById(id: String): Line? = Database.dbQuery {
