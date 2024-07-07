@@ -1,61 +1,169 @@
 <template>
   <div class="q-pa-md">
-    <div class="bg-white shadow-4 rounded-borders q-pa-md">
-      <div class="row justify-between"  @click="expand = !expand">
-        <h2>
+    <q-card class="bg-white q-py-md">
+      <q-card-section class="row justify-between items-center"  @click="expand = !expand">
+        <div class="text-h5">
           <q-icon name="tune" color="primary" class="q-mr-sm" />
           Sortieren & Filtern
-        </h2>
-        <q-btn flat round icon="expand_more" size="lg" :class="expand ? 'lt-md rotate-180' : 'lt-md'" style="transition: .2s;" />
-      </div>
-      <div :class="expand ? '' : 'gt-sm'">
-        <q-checkbox v-model="onlyOpenDisturbances" label="Nur offene Störungen anzeigen" @update:model-value="emitData()" />
-        <q-select v-model="sort" :options="sortOptions" label="Sortieren nach" class="q-mb-md" @update:model-value="emitData()" filled />
-        <h3>Datum</h3>
-        <div class="row">
-          <DatePicker label="Von" :value="fromDate" class="col-6" @update:modelValue="updateFromDate" />
-          <DatePicker label="Bis" :value="toDate" class="col-6" @update:modelValue="updateToDate"/>
         </div>
-        <h3 class="q-mt-none">Störungstypen</h3>
-        <q-btn-group class="full-width q-mb-sm">
-          <q-btn text-color="black" size="sm" label="Alle auswählen" @click="selectAllTypes(); emitData()" class="col-6" />
-          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllTypes(); emitData()" class="col-6" />
-        </q-btn-group>
-        <q-option-group v-model="types" :options="typeOptions" type="checkbox" class="q-ml-sm q-mb-sm" @update:model-value="emitData()" dense />
-        <h3>Linien</h3>
-        <q-btn-group class="full-width q-mb-sm">
-          <q-btn text-color="black" size="sm" label="Alle auswählen" @click="selectAllLines(); emitData()" class="col-6" />
-          <q-btn textColor="black" size="sm" label="Alle abwählen" @click="deselectAllLines(); emitData()" class="col-6" />
-        </q-btn-group>
+        <q-btn flat round icon="expand_more" size="lg" :class="expand ? 'lt-md rotate-180' : 'lt-md'" style="transition: .2s;" />
+      </q-card-section>
+      <q-card-section :class="expand ? '' : 'gt-sm'">
+        <q-checkbox v-model="onlyClosedDisturbances" label="Nur geschlossene Störungen" @update:model-value="emitData()" />
+        <q-select v-model="order" :options="ORDER_OPTIONS" label="Sortieren nach" class="q-mb-md" @update:model-value="emitData()" filled />
+        <div class="text-h6 q-mb-sm">Datum</div>
+        <DateRangePicker :value="dates" class="col-6" @update:modelValue="updateDates" />
+        <div class="row justify-between q-mb-sm">
+          <div class="text-h6">Störungstypen</div>
+          <q-btn-group rounded>
+            <q-btn text-color="black" size="sm" label="Alle" @click="selectAllTypes()" class="col-6" />
+            <q-btn textColor="black" size="sm" label="Keine" @click="deselectAllTypes()" class="col-6" />
+          </q-btn-group>
+        </div>
+        <q-option-group v-model="types" :options="TYPE_OPTIONS" type="checkbox" class="q-ml-sm q-mb-sm" @update:model-value="emitData()" dense />
+        <div class="row justify-between q-mt-md q-mb-sm">
+          <div class="text-h6">Linien</div>
+          <q-btn-group rounded>
+            <q-btn text-color="black" size="sm" label="Alle" @click="selectLines()" class="col-6" />
+            <q-btn textColor="black" size="sm" label="Keine" @click="deselectLines()" class="col-6" />
+          </q-btn-group>
+        </div>
         <div v-if="linesLoading" class="row justify-center">
           <q-spinner size="md" color="primary" />
         </div>
         <div v-if="lineOptions == null" class="text-center text-grey">
           Keine Verbindung zur API
         </div>
-        <div class="row justify-center q-mr-xs" v-if="!linesLoading && lineOptions != null">
-          <q-btn unelevated v-for="line in lineOptions" :key="line.id" :label="line.id" class="q-ml-xs q-mt-xs" style="width: 50px"
-            :color="lines.includes(line.id) ? getLineColor(line.id, line.type) : 'grey-4'" @click="toggleLine(line.id); emitData()" />
+        <div v-for="type in LINE_TYPES" :key="type.type_id">
+          <div class="row justify-between q-mt-md q-mb-sm">
+            <div class="text-subtitle1">{{type.title}}</div>
+            <q-btn-group flat rounded>
+              <q-btn text-color="black" size="sm" label="Alle" @click="selectLines(type.type_id)" class="col-6" />
+              <q-btn textColor="black" size="sm" label="Keine" @click="deselectLines(type.type_id)" class="col-6" />
+            </q-btn-group>
+          </div>
+          <div class="row q-mr-xs" v-if="!linesLoading && lineOptions != null">
+            <q-btn unelevated v-for="line in lineOptions.filter(l => l.type === type.type_id)" :key="line.id"
+              :label="line.display_name" class="q-ml-xs q-mt-xs"
+              :style="`width: 50px; background: ${$globals.getLineColor(line)}; color: ${lines.includes(line.id) ? 'white' : $globals.getLineColor(line)};`"
+              :outline="!lines.includes(line.id)"
+              @click="toggleLine(line.id)" />
+          </div>
         </div>
-      </div>
-    </div>
+      </q-card-section>
+    </q-card>
   </div>
 </template>
 
 <script>
-import DatePicker from './DatePicker.vue'
+import DateRangePicker from './DateRangePicker.vue'
 import { ref } from 'vue'
+
+const LINE_TYPES = [
+  {
+    type_id: 2,
+    title: 'U-Bahn'
+  },
+  {
+    type_id: 1,
+    title: 'Straßenbahn'
+  },
+  {
+    type_id: 0,
+    title: 'Bus'
+  },
+  {
+    type_id: 3,
+    title: 'Nightline & andere'
+  }
+]
+const ORDER_OPTIONS = [
+  {
+    label: 'Startzeit - neueste zuerst',
+    order_id: 0
+  },
+  {
+    label: 'Startzeit - älteste zuerst',
+    order_id: 1
+  },
+  {
+    label: 'Endzeit - neueste zuerst',
+    order_id: 2
+  },
+  {
+    label: 'Endzeit - älteste zuerst',
+    order_id: 3
+  }
+]
+const TYPE_OPTIONS = [
+  {
+    label: 'Verspätungen',
+    value: '0'
+  },
+  {
+    label: 'Verkehrsunfälle',
+    value: '1'
+  },
+  {
+    label: 'Schadhafte Fahrzeuge',
+    value: '2'
+  },
+  {
+    label: 'Gleisschäden',
+    value: '3'
+  },
+  {
+    label: 'Weichenstörungen',
+    value: '4'
+  },
+  {
+    label: 'Fahrleitungsgebrechen',
+    value: '5'
+  },
+  {
+    label: 'Signalstörungen',
+    value: '6'
+  },
+  {
+    label: 'Rettungseinsätze',
+    value: '7'
+  },
+  {
+    label: 'Polizeieinsätze',
+    value: '8'
+  },
+  {
+    label: 'Feuerwehreinsätze',
+    value: '9'
+  },
+  {
+    label: 'Falschparker',
+    value: '10'
+  },
+  {
+    label: 'Demonstrationen',
+    value: '11'
+  },
+  {
+    label: 'Veranstaltungen',
+    value: '12'
+  },
+  {
+    label: 'Sonstiges',
+    value: '13'
+  }
+]
 
 export default {
   name: 'FilterSortPanel',
   inject: ['$globals'],
 
   props: {
-    getLineColor: Function
+    defaultParams: Object
   },
 
   components: {
-    DatePicker
+    DateRangePicker
   },
 
   methods: {
@@ -63,22 +171,16 @@ export default {
       return /^(((0?[1-9]|[12]\d|3[01])\.(0[13578]|[13578]|1[02])\.((1[6-9]|[2-9]\d)\d{2}))|((0?[1-9]|[12]\d|30)\.(0[13456789]|[13456789]|1[012])\.((1[6-9]|[2-9]\d)\d{2}))|((0?[1-9]|1\d|2[0-8])\.0?2\.((1[6-9]|[2-9]\d)\d{2}))|(29\.0?2\.((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$/.test(date)
     },
 
-    updateFromDate (newValue) {
-      if (this.validateDate(newValue) && newValue !== this.fromDate) {
-        this.fromDate = newValue
-        this.emitData()
-      }
-    },
-
-    updateToDate (newValue) {
-      if (this.validateDate(newValue) && newValue !== this.toDate) {
-        this.toDate = newValue
+    updateDates (newDates) {
+      if (this.validateDate(newDates.from) && this.validateDate(newDates.to)) {
+        this.dates = newDates
         this.emitData()
       }
     },
 
     selectAllTypes () {
       this.types = ref(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'])
+      this.emitData()
     },
 
     deselectAllTypes () {
@@ -91,25 +193,36 @@ export default {
       } else {
         this.lines.push(id)
       }
+      this.emitData()
     },
 
-    selectAllLines () {
-      this.lines = []
-      for (const line of this.lineOptions) {
-        this.lines.push(line.id)
+    selectLines (type) {
+      let lines = this.lines
+      if (type === undefined) {
+        lines = lines.concat(this.lineOptions.map(l => l.id))
+      } else {
+        lines = lines.concat(this.lineOptions.filter(l => l.type === type).map(l => l.id))
       }
+      this.lines = [...new Set(lines)]
+      this.emitData()
     },
 
-    deselectAllLines () {
-      this.lines = []
+    deselectLines (type) {
+      if (type === undefined) {
+        this.lines = []
+      } else {
+        const toRemove = this.lineOptions.filter(l => l.type === type).map(l => l.id)
+        this.lines = this.lines.filter(l => !toRemove.includes(l))
+        this.emitData()
+      }
     },
 
     emitData () {
       const data = {
-        sort: this.sort,
-        onlyOpenDisturbances: this.onlyOpenDisturbances,
-        fromDate: this.fromDate,
-        toDate: this.toDate,
+        order: this.order.order_id,
+        onlyClosedDisturbances: this.onlyClosedDisturbances,
+        from: this.dates.from,
+        to: this.dates.to,
         types: this.types,
         lines: this.lines
       }
@@ -128,9 +241,21 @@ export default {
   },
 
   async created () {
+    this.LINE_TYPES = LINE_TYPES
+    this.ORDER_OPTIONS = ORDER_OPTIONS
+    this.TYPE_OPTIONS = TYPE_OPTIONS
+
+    if (this.defaultParams !== undefined) {
+      if ('order' in this.defaultParams) this.order = this.ORDER_OPTIONS[this.defaultParams.order]
+      if ('onlyClosedDisturbances' in this.defaultParams) {
+        this.onlyClosedDisturbances = (this.defaultParams.onlyClosedDisturbances === 'true')
+      }
+      if ('from' in this.defaultParams) this.dates.from = this.defaultParams.from
+      if ('to' in this.defaultParams) this.dates.to = this.defaultParams.to
+    }
+
     this.lineOptions = await this.fetchLines()
     if (this.lineOptions != null) {
-      this.selectAllLines()
       this.emitData()
     }
     this.linesLoading = false
@@ -139,90 +264,12 @@ export default {
   emits: ['change'],
 
   data () {
-    const defaultDate = new Date(Date.now()).toLocaleDateString('de-DE', { dateStyle: 'medium' })
     return {
       expand: false,
-      sort: ref({ label: 'Startzeit - neueste zuerst', value: '' }),
-      sortOptions: [
-        {
-          label: 'Startzeit - neueste zuerst',
-          value: ''
-        },
-        {
-          label: 'Startzeit - älteste zuerst',
-          value: 'desc=false&'
-        },
-        {
-          label: 'Endzeit - neueste zuerst',
-          value: 'sort=end&'
-        },
-        {
-          label: 'Endzeit - älteste zuerst',
-          value: 'sort=end&desc=false&'
-        }
-      ],
-      onlyOpenDisturbances: ref(false),
-      fromDate: ref(defaultDate),
-      toDate: ref(defaultDate),
+      order: ref(ORDER_OPTIONS[0]),
+      onlyClosedDisturbances: ref(false),
+      dates: ref({ from: this.$globals.defaultDate, to: this.$globals.defaultDate }),
       types: ref(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']),
-      typeOptions: [
-        {
-          label: 'Verspätungen',
-          value: '0'
-        },
-        {
-          label: 'Verkehrsunfälle',
-          value: '1'
-        },
-        {
-          label: 'Schadhafte Fahrzeuge',
-          value: '2'
-        },
-        {
-          label: 'Gleisschäden',
-          value: '3'
-        },
-        {
-          label: 'Weichenstörungen',
-          value: '4'
-        },
-        {
-          label: 'Fahrleitungsgebrechen',
-          value: '5'
-        },
-        {
-          label: 'Signalstörungen',
-          value: '6'
-        },
-        {
-          label: 'Rettungseinsätze',
-          value: '7'
-        },
-        {
-          label: 'Polizeieinsätze',
-          value: '8'
-        },
-        {
-          label: 'Feuerwehreinsätze',
-          value: '9'
-        },
-        {
-          label: 'Falschparker',
-          value: '10'
-        },
-        {
-          label: 'Demonstrationen',
-          value: '11'
-        },
-        {
-          label: 'Veranstaltungen',
-          value: '12'
-        },
-        {
-          label: 'Sonstiges',
-          value: '13'
-        }
-      ],
       lineOptions: [],
       linesLoading: true,
       lines: []

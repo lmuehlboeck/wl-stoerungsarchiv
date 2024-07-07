@@ -3,18 +3,19 @@
     <HeaderNav />
   </header>
   <main class="q-my-xl q-mx-md">
-    <div class="q-mx-auto col-8 bg-white shadow-4 rounded-borders q-pa-md" style="max-width: 800px">
-      <div class="full-width">
-        <h2>Störung {{$route.params.id}}</h2>
+    <q-card class="q-mx-auto col-8 q-py-md" style="max-width: 800px">
+      <q-card-section class="full-width">
+        <div class="text-h5">Störung {{$route.params.id}}</div>
         <div v-if="loading" class="row justify-center">
             <q-spinner size="md" color="primary" />
         </div>
         <div v-if="!loading && disturbance == null" class="text-center text-grey">
           Diese Störung wurde nicht gefunden
         </div>
-        <DisturbanceDetails v-if="!loading && disturbance !== null" :disturbance="disturbance" :expand="true" :getLineColor="getLineColor" />
-      </div>
-    </div>
+        <DisturbanceDetails v-if="!loading && disturbance !== null" :disturbance="disturbance" :expand="true"
+          :showLink="false" :expandable="false" />
+      </q-card-section>
+    </q-card>
   </main>
 </template>
 
@@ -24,6 +25,7 @@ import HeaderNav from '@/components/HeaderNav.vue'
 
 export default {
   name: 'HomeView',
+  inject: ['$globals'],
 
   components: {
     DisturbanceDetails,
@@ -31,26 +33,10 @@ export default {
   },
 
   methods: {
-    getLineColor (id, type) {
-      const colors = ['blue', 'red', 'grey', 'purple']
-      if (type === 2) {
-        if (id.includes('U1')) { return 'red' }
-        if (id.includes('U2')) { return 'pink' }
-        if (id.includes('U3')) { return 'orange' }
-        if (id.includes('U4')) { return 'green' }
-        if (id.includes('U5')) { return 'teal' }
-        if (id.includes('U6')) { return 'brown' }
-      }
-      return colors[type]
-    },
-
     async fetchDisturbance (id) {
       try {
-        const res = await fetch(`https://wls.byleo.net/api/disturbances/${id}`)
-        const data = await res.json()
-        if (!('error' in data)) {
-          return data.data
-        }
+        const data = await this.$globals.fetch(`/disturbances/${id}`)
+        return data.disturbance
       } catch (err) {
         console.log(err)
       }

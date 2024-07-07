@@ -3,12 +3,14 @@
     <HeaderNav :active-index="1" />
   </header>
   <main class="q-my-xl q-mx-md">
-    <div class="q-mx-auto col-8 bg-white shadow-4 rounded-borders q-pa-md" style="max-width: 800px">
-      <div class="full-width">
-        <h1>Statistik</h1>
-        <p class="text-grey">Noch in Arbeit...</p>
-      </div>
-    </div>
+    <q-card class="q-mx-auto col-8 bg-white q-py-md" style="max-width: 800px">
+      <q-card-section>
+        <div class="text-h3">Statistik</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-grey">Noch in Arbeit...</div>
+      </q-card-section>
+    </q-card>
   </main>
 </template>
 

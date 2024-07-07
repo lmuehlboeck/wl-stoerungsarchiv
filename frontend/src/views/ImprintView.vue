@@ -3,20 +3,28 @@
     <HeaderNav :active-index="3" />
   </header>
   <main class="q-my-xl q-mx-md">
-    <div class="q-mx-auto col-8 bg-white shadow-4 rounded-borders q-pa-md" style="max-width: 800px">
-      <div class="full-width">
-        <h1>Impressum</h1>
-        <p class="text-subtitle1">Leo Mühlböck<br>
-        1210 Wien <br>
-        Österreich</p>
-        <p class="text-subtitle1">E-Mail: <a href="mailto:byleo@gmx.at">byleo@gmx.at</a></p>
-        <h2>Datenschutzhinweis</h2>
+    <q-card class="q-mx-auto col-8 q-py-md" style="max-width: 800px">
+      <q-card-section >
+        <div class="text-h3">Impressum</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-subtitle1">
+          Leo Mühlböck<br>
+          1210 Wien <br>
+          Österreich <br>
+          E-Mail: <a href="mailto:byleo@gmx.at">byleo@gmx.at</a>
+        </div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-h4">Datenschutzhinweis</div>
         <p>Diese Website verwendet <b>keine</b> Cookies, weder Tracking-Cookies noch technische Cookies.</p>
-        <h2>Datenquelle</h2>
-        <p>Die Daten werden automatisch aus der <a href="https://www.wienerlinien.at/open-data">Open-Data-API der Wiener Linien</a> aufgezeichnet.</p>
-        <p>Keine Garantie auf Vollständigkeit, Richtigkeit oder Integrität der Daten.</p>
-      </div>
-    </div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-h4">Datenquelle</div>
+        Die Daten werden automatisch aus der <a href="https://www.wienerlinien.at/open-data">Open-Data-API der Wiener Linien</a> aufgezeichnet. <br>
+        Keine Garantie auf Vollständigkeit, Richtigkeit oder Integrität der Daten.
+      </q-card-section>
+    </q-card>
   </main>
 </template>
 
