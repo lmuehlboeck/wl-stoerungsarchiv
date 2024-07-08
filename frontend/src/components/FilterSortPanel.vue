@@ -50,9 +50,9 @@
             <q-skeleton type="QBtn" style="width: 50px; height: 36px;" class="q-ml-xs q-mt-xs" v-for="n in 5" :key="n" />
           </div>
         </div>
-      </q-card-section>
-      <q-card-section class="row">
-        <q-btn label="Zurücksetzen" color="primary" class="col" @click="reset" rounded />
+        <div class="row q-mt-lg">
+          <q-btn label="Zurücksetzen" color="primary" class="col" @click="reset" rounded />
+        </div>
       </q-card-section>
     </q-card>
   </div>
