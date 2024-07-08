@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <q-card class="bg-white q-py-md">
-      <q-card-section class="row justify-between items-center"  @click="expand = !expand">
+      <q-card-section class="row no-wrap justify-between items-center"  @click="expand = !expand">
         <div class="text-h5">
           <q-icon name="tune" color="primary" class="q-mr-sm" />
           Sortieren & Filtern
@@ -28,9 +28,6 @@
             <q-btn textColor="black" size="sm" label="Keine" @click="deselectLines()" class="col-6" />
           </q-btn-group>
         </div>
-        <div v-if="linesLoading" class="row justify-center">
-          <q-spinner size="md" color="primary" />
-        </div>
         <div v-if="lineOptions == null" class="text-center text-grey">
           Keine Verbindung zur API
         </div>
@@ -42,14 +39,20 @@
               <q-btn textColor="black" size="sm" label="Keine" @click="deselectLines(type.type_id)" class="col-6" />
             </q-btn-group>
           </div>
-          <div class="row q-mr-xs" v-if="!linesLoading && lineOptions != null">
+          <div v-if="!linesLoading && lineOptions != null">
             <q-btn unelevated v-for="line in lineOptions.filter(l => l.type === type.type_id)" :key="line.id"
               :label="line.display_name" class="q-ml-xs q-mt-xs"
               :style="`width: 50px; background: ${$globals.getLineColor(line)}; color: ${lines.includes(line.id) ? 'white' : $globals.getLineColor(line)};`"
               :outline="!lines.includes(line.id)"
               @click="toggleLine(line.id)" />
           </div>
+          <div class="row" v-else>
+            <q-skeleton type="QBtn" style="width: 50px; height: 36px;" class="q-ml-xs q-mt-xs" v-for="n in 5" :key="n" />
+          </div>
         </div>
+      </q-card-section>
+      <q-card-section class="row">
+        <q-btn label="Zurücksetzen" color="primary" class="col" @click="reset" rounded />
       </q-card-section>
     </q-card>
   </div>
@@ -237,6 +240,16 @@ export default {
         console.log(err)
       }
       return null
+    },
+
+    reset () {
+      this.order = this.ORDER_OPTIONS[0]
+      this.onlyClosedDisturbances = false
+      this.dates.from = this.$globals.defaultDate
+      this.dates.to = this.$globals.defaultDate
+      this.types = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+      this.lines = []
+      this.emitData()
     }
   },
 
@@ -245,16 +258,15 @@ export default {
     this.ORDER_OPTIONS = ORDER_OPTIONS
     this.TYPE_OPTIONS = TYPE_OPTIONS
 
+    this.lineOptions = await this.fetchLines()
     if (this.defaultParams !== undefined) {
       if ('order' in this.defaultParams) this.order = this.ORDER_OPTIONS[this.defaultParams.order]
-      if ('onlyClosedDisturbances' in this.defaultParams) {
-        this.onlyClosedDisturbances = (this.defaultParams.onlyClosedDisturbances === 'true')
-      }
+      if ('onlyClosedDisturbances' in this.defaultParams) this.onlyClosedDisturbances = (this.defaultParams.onlyClosedDisturbances === 'true')
       if ('from' in this.defaultParams) this.dates.from = this.defaultParams.from
       if ('to' in this.defaultParams) this.dates.to = this.defaultParams.to
+      if ('types' in this.defaultParams) this.types = this.defaultParams.types
+      if ('lines' in this.defaultParams) this.lines = this.defaultParams.lines
     }
-
-    this.lineOptions = await this.fetchLines()
     if (this.lineOptions != null) {
       this.emitData()
     }
@@ -266,10 +278,10 @@ export default {
   data () {
     return {
       expand: false,
-      order: ref(ORDER_OPTIONS[0]),
-      onlyClosedDisturbances: ref(false),
-      dates: ref({ from: this.$globals.defaultDate, to: this.$globals.defaultDate }),
-      types: ref(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']),
+      order: ORDER_OPTIONS[0],
+      onlyClosedDisturbances: false,
+      dates: { from: this.$globals.defaultDate, to: this.$globals.defaultDate },
+      types: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
       lineOptions: [],
       linesLoading: true,
       lines: []

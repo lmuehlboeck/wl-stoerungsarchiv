@@ -26,12 +26,6 @@
           <div v-if="disturbances.length === 0" class="text-center text-grey">
             Keine Störungen passend zum gesetzten Filter gefunden
           </div>
-          <!-- <q-virtual-scroll virtual-scroll-item-size="205" virtual-scroll-slice-size="50" :items="disturbances" v-slot="{ item }" :scroll-target="disturbances.length > 15 ? 'document.body' : undefined" ref="disturbanceScroll">
-            <div :key="item.id" @click="item.descriptions.length > 1 && toggleDisturbance(item.id)">
-              <DisturbanceDetails :disturbance="item" :expandable="item.descriptions.length > 1"
-                :expand="expandedDisturbances.includes(item.id)" :getLineColor="getLineColor" :showLink="true" />
-            </div>
-          </q-virtual-scroll> -->
           <q-infinite-scroll @load="onLoad">
             <div v-for="item in shownDisturbances" :key="item.id" @click="item.descriptions.length > 1 && toggleDisturbance(item.id)">
               <DisturbanceDetails :disturbance="item" :expandable="item.descriptions.length > 1"

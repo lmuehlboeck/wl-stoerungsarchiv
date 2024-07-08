@@ -33,7 +33,7 @@ export default {
           ...(params.onlyClosedDisturbances) && { onlyClosedDisturbances: params.onlyClosedDisturbances },
           ...(params.from !== this.$globals.defaultDate) && { from: params.from },
           ...(params.to !== this.$globals.defaultDate) && { to: params.to },
-          ...(params.types.length < 14) && { types: params.types.toString() },
+          ...(params.types.length < 14 && params.types.length > 0) && { types: params.types.toString() },
           ...(params.lines.length > 0) && { lines: params.lines.toString() }
         }
       })
@@ -42,7 +42,12 @@ export default {
   },
 
   created () {
-    this.FILTER_SORT_PARAMS = this.$route.query
+    const q = this.$route.query
+    this.FILTER_SORT_PARAMS = {
+      ...q,
+      ...('types' in q) && { types: q.types.split(',') },
+      ...('lines' in q) && { lines: q.lines.split(',') }
+    }
   },
 
   data () {
