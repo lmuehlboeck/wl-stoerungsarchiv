@@ -16,7 +16,7 @@
         <div class="text-h4">Motivation</div>
         <div>
           Die Idee dieses Projekts hatte ich schon lange, jedoch ist es mir erst recht spät in den Sinn gekommen, das ganze selbst umzusetzen.
-          Ähnliche Websites exestieren bereits, allerdings wollte ich das ganze mit meinen eigenen Vorstellungen (Filtern & Sortieren) umsetzen.
+          Ähnliche Websites existieren bereits, allerdings wollte ich das ganze mit meinen eigenen Vorstellungen (Filtern & Sortieren) umsetzen.
         </div>
         <p>
           Die Wiener Linien haben, so wie alle anderen ÖPNV-Betreiber auch, Störungen. Diese sind übersichtlich und aktuell auf der Website oder in der App einsehbar.
