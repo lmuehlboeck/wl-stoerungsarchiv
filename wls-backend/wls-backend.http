@@ -1,0 +1,6 @@
+@wls_backend_HostAddress = http://localhost:5206
+
+GET {{wls_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
