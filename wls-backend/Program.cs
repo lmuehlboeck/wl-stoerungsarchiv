@@ -1,15 +1,45 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using wls_backend.Data;
+using wls_backend.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        var connectionString = string.Format(
+            "Server={0};User Id={1};Password={2};TrustServerCertificate=True;Database={3};",
+            builder.Configuration["Db:Host"],
+            builder.Configuration["Db:User"],
+            builder.Configuration["Db:Password"],
+            builder.Configuration["Db:Database"]
+        );
+        options.UseNpgsql(connectionString);
+    }
+);
+
+builder.Services.AddTransient<DisturbanceService>();
+builder.Services.AddTransient<LineService>();
+
+builder.Services.AddHttpClient();
+builder.Services.AddHostedService<WlUpdateService>();
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -19,5 +49,11 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var Scope = app.Services.CreateScope())
+{
+    var context = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
 
 app.Run();
