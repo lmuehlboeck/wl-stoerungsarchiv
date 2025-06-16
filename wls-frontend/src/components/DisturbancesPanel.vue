@@ -10,7 +10,14 @@
             <q-card-section>
               <div class="row justify-between items-center">
                 <div class="row">
-                  <q-skeleton square type="QChip" width="40px" class="q-mr-xs" v-for="n in 3" :key="n" />
+                  <q-skeleton
+                    square
+                    type="QChip"
+                    width="40px"
+                    class="q-mr-xs"
+                    v-for="n in 3"
+                    :key="n"
+                  />
                 </div>
                 <q-skeleton type="text" width="100px" />
               </div>
@@ -26,9 +33,20 @@
             Keine Störungen passend zum gesetzten Filter gefunden
           </div>
           <q-infinite-scroll @load="onLoad">
-            <div v-for="item in shownDisturbances" :key="item.id" @click="item.descriptions.length > 1 && toggleDisturbance(item.id)">
-              <DisturbanceDetails :disturbance="item" :expandable="item.descriptions.length > 1"
-                :expand="expandedDisturbances.includes(item.id)" :getLineColor="getLineColor" :showLink="true" />
+            <div
+              v-for="item in shownDisturbances"
+              :key="item.id"
+              @click="
+                item.descriptions.length > 1 && toggleDisturbance(item.id)
+              "
+            >
+              <DisturbanceDetails
+                :disturbance="item"
+                :expandable="item.descriptions.length > 1"
+                :expand="expandedDisturbances.includes(item.id)"
+                :getLineColor="getLineColor"
+                :showLink="true"
+              />
             </div>
           </q-infinite-scroll>
         </div>
@@ -38,85 +56,90 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import DisturbanceDetails from './DisturbanceDetails.vue'
+import { ref } from "vue";
+import DisturbanceDetails from "./DisturbanceDetails.vue";
 
 export default {
-  name: 'FilterSortPanel',
-  inject: ['$globals'],
+  name: "FilterSortPanel",
+  inject: ["$globals"],
 
   props: {
-    getLineColor: Function
+    getLineColor: Function,
   },
 
   components: {
-    DisturbanceDetails
+    DisturbanceDetails,
   },
 
   methods: {
-    onLoad (index, done) {
-      this.shownDisturbances.push(...this.disturbances.slice(index * 50, (index + 1) * 50))
-      done()
+    onLoad(index, done) {
+      this.shownDisturbances.push(
+        ...this.disturbances.slice(index * 50, (index + 1) * 50)
+      );
+      done();
     },
 
-    toggleDisturbance (id) {
+    toggleDisturbance(id) {
       if (this.expandedDisturbances.includes(id)) {
-        this.expandedDisturbances.splice(this.expandedDisturbances.indexOf(id), 1)
+        this.expandedDisturbances.splice(
+          this.expandedDisturbances.indexOf(id),
+          1
+        );
       } else {
-        this.expandedDisturbances.push(id)
+        this.expandedDisturbances.push(id);
       }
     },
 
-    async update (params) {
-      this.lastScrollPosition = window.html.scrollTop
-      this.loading = true
-      this.disturbances = await this.fetchDisturbances(params)
-      this.shownDisturbances = this.disturbances.slice(0, 50)
+    async update(params) {
+      this.lastScrollPosition = window.html.scrollTop;
+      this.loading = true;
+      this.disturbances = await this.fetchDisturbances(params);
+      this.shownDisturbances = this.disturbances.slice(0, 50);
     },
 
-    async fetchDisturbances (params) {
+    async fetchDisturbances(params) {
       if (params.types.length === 0) {
-        return []
+        return [];
       }
       try {
         // date parsing
-        const fromDateArr = params.fromDate.split('.')
-        const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`
-        const toDateArr = params.toDate.split('.')
-        const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`
-        let url = `/disturbances?fromDate=${fromDate}&toDate=${toDate}&orderBy=${params.orderBy}&types=${params.types.toString()}`
+        const fromDateArr = params.fromDate.split(".");
+        const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`;
+        const toDateArr = params.toDate.split(".");
+        const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`;
+        let url = `/disturbances?fromDate=${fromDate}&toDate=${toDate}&orderBy=${
+          params.orderBy
+        }&types=${params.types.toString()}`;
         if (params.lines.length > 0) {
-          url += `&lines=${params.lines.toString()}`
+          url += `&lines=${params.lines.toString()}`;
         }
         if (params.onlyClosed) {
-          url += '&onlyClosed=true'
+          url += "&onlyClosed=true";
         }
-        return (await this.$globals.fetch(url))
+        return await this.$globals.fetch(url);
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-      return []
-    }
+      return [];
+    },
   },
 
-  data () {
+  data() {
     return {
       disturbances: [],
       shownDisturbances: [],
       loading: false,
       expandedDisturbances: ref([]),
-      lastScrollPosition: 0
-    }
+      lastScrollPosition: 0,
+    };
   },
 
   watch: {
-    disturbances () {
-      this.loading = false
-    }
-  }
-}
+    disturbances() {
+      this.loading = false;
+    },
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

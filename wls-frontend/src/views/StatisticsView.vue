@@ -15,17 +15,15 @@
 </template>
 
 <script>
-import HeaderNav from '@/components/HeaderNav.vue'
+import HeaderNav from "@/components/HeaderNav.vue";
 
 export default {
-  name: 'StatisticsView',
+  name: "StatisticsView",
 
   components: {
-    HeaderNav
-  }
-}
+    HeaderNav,
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

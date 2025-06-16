@@ -1,30 +1,32 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 
 export default {
-  name: 'LayoutDefault',
+  name: "LayoutDefault",
 
-  setup () {
+  setup() {
     return {
-      leftDrawerOpen: ref(false)
-    }
-  }
-}
+      leftDrawerOpen: ref(false),
+    };
+  },
+};
 </script>
 
 <style>
 @font-face {
   font-family: "Montserrat";
-  src: local("Montserrat"),   url(../public/fonts/Montserrat-Regular.ttf) format("truetype");
+  src: local("Montserrat"),
+    url(../public/fonts/Montserrat-Regular.ttf) format("truetype");
 }
 
 @font-face {
   font-family: "Montserrat bold";
-  src: local("Montserrat bold"),   url(../public/fonts/Montserrat-SemiBold.ttf) format("truetype");
+  src: local("Montserrat bold"),
+    url(../public/fonts/Montserrat-SemiBold.ttf) format("truetype");
 }
 
 * {
@@ -32,7 +34,7 @@ export default {
 }
 
 html {
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
   overflow-x: hidden;
 }
 
