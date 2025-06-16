@@ -5,6 +5,7 @@ using wls_backend.Data;
 using wls_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var AllowLocalOrigins = "AllowLocalOrigins";
 
 
 builder.Services.AddControllers();
@@ -37,14 +38,27 @@ builder.Services.AddTransient<LineService>();
 builder.Services.AddHttpClient();
 builder.Services.AddHostedService<WlUpdateService>();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(AllowLocalOrigins,
+            builder => builder.WithOrigins("http://localhost:8080", "http://localhost:8081")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader());
+    });
+}
+
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(); 
 }
+
+app.UseCors(AllowLocalOrigins);
 
 app.UseAuthorization();
 
