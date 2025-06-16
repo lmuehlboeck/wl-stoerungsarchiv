@@ -9,8 +9,8 @@
         <q-btn flat round icon="expand_more" size="lg" :class="expand ? 'lt-md rotate-180' : 'lt-md'" style="transition: .2s;" />
       </q-card-section>
       <q-card-section :class="expand ? '' : 'gt-sm'">
-        <q-checkbox v-model="onlyClosedDisturbances" label="Nur geschlossene Störungen" @update:model-value="emitData()" />
-        <q-select v-model="order" :options="ORDER_OPTIONS" label="Sortieren nach" class="q-mb-md" @update:model-value="emitData()" filled />
+        <q-checkbox v-model="onlyClosed" label="Nur geschlossene Störungen" @update:model-value="emitData()" />
+        <q-select v-model="orderBy" :options="ORDER_OPTIONS" label="Sortieren nach" class="q-mb-md" @update:model-value="emitData()" filled />
         <div class="text-h6 q-mb-sm">Datum</div>
         <DateRangePicker :value="dates" class="col-6" @update:modelValue="updateDates" />
         <div class="row justify-between q-mb-sm">
@@ -41,7 +41,7 @@
           </div>
           <div v-if="!linesLoading && lineOptions != null">
             <q-btn unelevated v-for="line in lineOptions.filter(l => l.type === type.type_id)" :key="line.id"
-              :label="line.display_name" class="q-ml-xs q-mt-xs"
+              :label="line.displayName" class="q-ml-xs q-mt-xs"
               :style="`width: 50px; background: ${$globals.getLineColor(line)}; color: ${lines.includes(line.id) ? 'white' : $globals.getLineColor(line)};`"
               :outline="!lines.includes(line.id)"
               @click="toggleLine(line.id)" />
@@ -64,96 +64,108 @@ import { ref } from 'vue'
 
 const LINE_TYPES = [
   {
-    type_id: 2,
+    type_id: 'Metro',
     title: 'U-Bahn'
   },
   {
-    type_id: 1,
+    type_id: 'Tram',
     title: 'Straßenbahn'
   },
   {
-    type_id: 0,
+    type_id: 'Bus',
     title: 'Bus'
   },
   {
-    type_id: 3,
-    title: 'Nightline & andere'
+    type_id: 'Night',
+    title: 'Nightline'
+  },
+  {
+    type_id: 'Misc',
+    title: 'Eingestellt & andere'
   }
 ]
 const ORDER_OPTIONS = [
   {
     label: 'Startzeit - neueste zuerst',
-    order_id: 0
+    order_id: 'StartedAtDesc'
   },
   {
     label: 'Startzeit - älteste zuerst',
-    order_id: 1
+    order_id: 'StartedAtAsc'
   },
   {
     label: 'Endzeit - neueste zuerst',
-    order_id: 2
+    order_id: 'EndedAtDesc'
   },
   {
     label: 'Endzeit - älteste zuerst',
-    order_id: 3
+    order_id: 'EndedAtAsc'
   }
 ]
 const TYPE_OPTIONS = [
   {
     label: 'Verspätungen',
-    value: '0'
+    value: 'Delay'
   },
   {
     label: 'Verkehrsunfälle',
-    value: '1'
-  },
-  {
-    label: 'Schadhafte Fahrzeuge',
-    value: '2'
-  },
-  {
-    label: 'Gleisschäden',
-    value: '3'
-  },
-  {
-    label: 'Weichenstörungen',
-    value: '4'
-  },
-  {
-    label: 'Fahrleitungsgebrechen',
-    value: '5'
-  },
-  {
-    label: 'Signalstörungen',
-    value: '6'
+    value: 'Accident'
   },
   {
     label: 'Rettungseinsätze',
-    value: '7'
-  },
-  {
-    label: 'Polizeieinsätze',
-    value: '8'
+    value: 'AmbulanceOperation'
   },
   {
     label: 'Feuerwehreinsätze',
-    value: '9'
+    value: 'FireDepartmentOperation'
+  },
+  {
+    label: 'Polizeieinsätze',
+    value: 'PoliceOperation'
   },
   {
     label: 'Falschparker',
-    value: '10'
+    value: 'ParkingOffender'
+  },
+  {
+    label: 'Schadhafte Fahrzeuge',
+    value: 'DefectiveVehicle'
+  },
+  {
+    label: 'Fahrleitungsschäden',
+    value: 'CatenaryDamage'
+  },
+  {
+    label: 'Gleisschäden',
+    value: 'TrackDamage'
+  },
+  {
+    label: 'Signalstörungen',
+    value: 'SignalDamage'
+  },
+  {
+    label: 'Weichenstörungen',
+    value: 'SwitchDamage'
+  },
+  {
+    label: 'Bauarbeiten',
+    value: 'ConstructionWork'
   },
   {
     label: 'Demonstrationen',
-    value: '11'
+    value: 'Demonstration'
   },
   {
     label: 'Veranstaltungen',
-    value: '12'
+    value: 'Event'
+  },
+  {
+    label: 'Witterungsbedingt',
+    value: 'Weather'
   },
   {
     label: 'Sonstiges',
-    value: '13'
+    value: 'Misc'
   }
 ]
 
@@ -182,7 +194,7 @@ export default {
     },
 
     selectAllTypes () {
-      this.types = ref(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'])
+      this.types = ref(this.TYPE_OPTIONS.map(t => t.value))
       this.emitData()
     },
 
@@ -222,10 +234,10 @@ export default {
 
     emitData () {
       const data = {
-        order: this.order.order_id,
-        onlyClosedDisturbances: this.onlyClosedDisturbances,
-        from: this.dates.from,
-        to: this.dates.to,
+        orderBy: this.orderBy.order_id,
+        onlyClosed: this.onlyClosed,
+        fromDate: this.dates.from,
+        toDate: this.dates.to,
         types: this.types,
         lines: this.lines
       }
@@ -235,7 +247,7 @@ export default {
     async fetchLines () {
       try {
         const data = await this.$globals.fetch('/lines')
-        return data.lines
+        return data
       } catch (err) {
         console.log(err)
       }
@@ -243,11 +255,11 @@ export default {
     },
 
     reset () {
-      this.order = this.ORDER_OPTIONS[0]
-      this.onlyClosedDisturbances = false
+      this.orderBy = this.ORDER_OPTIONS[0]
+      this.onlyClosed = false
       this.dates.from = this.$globals.defaultDate
       this.dates.to = this.$globals.defaultDate
-      this.types = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+      this.types = this.TYPE_OPTIONS.map(t => t.value)
       this.lines = []
       this.emitData()
     }
@@ -260,10 +272,10 @@ export default {
 
     this.lineOptions = await this.fetchLines()
     if (this.defaultParams !== undefined) {
-      if ('order' in this.defaultParams) this.order = this.ORDER_OPTIONS[this.defaultParams.order]
-      if ('onlyClosedDisturbances' in this.defaultParams) this.onlyClosedDisturbances = (this.defaultParams.onlyClosedDisturbances === 'true')
-      if ('from' in this.defaultParams) this.dates.from = this.defaultParams.from
-      if ('to' in this.defaultParams) this.dates.to = this.defaultParams.to
+      if ('orderBy' in this.defaultParams) this.orderBy = this.ORDER_OPTIONS[this.defaultParams.orderBy]
+      if ('onlyClosed' in this.defaultParams) this.onlyClosed = (this.defaultParams.onlyClosed === 'true')
+      if ('fromDate' in this.defaultParams) this.dates.fromDate = this.defaultParams.fromDate
+      if ('toDate' in this.defaultParams) this.dates.toDate = this.defaultParams.toDate
       if ('types' in this.defaultParams) this.types = this.defaultParams.types
       if ('lines' in this.defaultParams) this.lines = this.defaultParams.lines
     }
@@ -278,10 +290,10 @@ export default {
   data () {
     return {
       expand: false,
-      order: ORDER_OPTIONS[0],
-      onlyClosedDisturbances: false,
+      orderBy: ORDER_OPTIONS[0],
+      onlyClosed: false,
       dates: { from: this.$globals.defaultDate, to: this.$globals.defaultDate },
-      types: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
+      types: TYPE_OPTIONS.map(t => t.value),
       lineOptions: [],
       linesLoading: true,
       lines: []

@@ -17,9 +17,8 @@
               <div>
                 <q-skeleton type="text" class="text-subtitle1" width="200px" />
               </div>
+              <q-skeleton square height="100px" />
             </q-card-section>
-            <q-separator inset />
-            <q-skeleton square height="150px" />
           </q-card>
         </div>
         <div v-else>
@@ -81,19 +80,18 @@ export default {
       }
       try {
         // date parsing
-        const fromDateArr = params.from.split('.')
+        const fromDateArr = params.fromDate.split('.')
         const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`
-        const toDateArr = params.to.split('.')
+        const toDateArr = params.toDate.split('.')
         const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`
-        const order = ['', 'desc=false&', 'order=end&', 'desc=false&order=end&'][params.order]
-        let url = `/disturbances?from=${fromDate}&to=${toDate}&${order}types=${params.types.toString()}`
+        let url = `/disturbances?fromDate=${fromDate}&toDate=${toDate}&orderBy=${params.orderBy}&types=${params.types.toString()}`
         if (params.lines.length > 0) {
           url += `&lines=${params.lines.toString()}`
         }
-        if (params.onlyClosedDisturbances) {
-          url += '&active=false'
+        if (params.onlyClosed) {
+          url += '&onlyClosed=true'
         }
-        return (await this.$globals.fetch(url)).disturbances
+        return (await this.$globals.fetch(url))
       } catch (err) {
         console.log(err)
       }

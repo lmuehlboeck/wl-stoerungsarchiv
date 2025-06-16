@@ -1,10 +1,14 @@
 export const globals = {
-  apiUrl: 'http://127.0.0.1:5000',
+  apiUrl: 'http://localhost:5206',
   defaultDate: new Date(Date.now()).toLocaleDateString('de-DE', { dateStyle: 'medium' }),
 
   getLineColor (line) {
-    const colors = ['#1c60a7', 'red', 'grey', 'purple']
-    if (line.type === 2) {
+    const colors = {
+      Tram: 'red',
+      Bus: 'blue',
+      Night: 'purple'
+    }
+    if (line.type === 'Metro') {
       if (line.id.includes('U1')) { return '#e40615' }
       if (line.id.includes('U2')) { return '#a962a4' }
       if (line.id.includes('U3')) { return '#ef7d00' }
