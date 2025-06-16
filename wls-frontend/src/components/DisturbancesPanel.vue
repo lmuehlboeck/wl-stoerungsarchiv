@@ -1,10 +1,8 @@
 <template>
   <div class="q-pa-md">
-    <q-card class="bg-white q-py-md">
+    <q-card class="bg-white q-pa-sm">
       <q-card-section>
-        <div class="text-h5">Störungen</div>
-      </q-card-section>
-      <q-card-section>
+        <h1 class="text-h5 q-mb-lg">Störungen</h1>
         <div v-if="loading">
           <q-card flat bordered v-for="n in 15" :key="n" class="q-my-sm">
             <q-card-section>

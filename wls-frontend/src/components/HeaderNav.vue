@@ -26,13 +26,8 @@
           >
         </li>
         <li>
-          <RouterLink class="q-py-sm q-px-md q-ml-xs" to="/infos"
-            >Infos</RouterLink
-          >
-        </li>
-        <li>
-          <RouterLink class="q-py-sm q-px-md q-ml-xs" to="/impressum"
-            >Impressum</RouterLink
+          <RouterLink class="q-py-sm q-px-md q-ml-xs" to="/kontakt"
+            >Kontakt</RouterLink
           >
         </li>
       </ul>
@@ -65,11 +60,6 @@
         <li>
           <RouterLink class="q-py-lg full-width block" to="/statistik"
             >Statistik</RouterLink
-          >
-        </li>
-        <li>
-          <RouterLink class="q-py-lg full-width block" to="/infos"
-            >Infos</RouterLink
           >
         </li>
         <li>

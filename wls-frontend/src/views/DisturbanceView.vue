@@ -3,9 +3,9 @@
     <HeaderNav />
   </header>
   <main class="q-my-xl q-mx-md">
-    <q-card class="q-mx-auto col-8 q-py-md" style="max-width: 800px">
+    <q-card class="q-mx-auto col-8 q-pa-md" style="max-width: 800px">
       <q-card-section class="full-width">
-        <div class="text-h5">Störung {{ $route.params.id }}</div>
+        <h1 class="text-h4 q-mb-lg">Störung {{ $route.params.id }}</h1>
         <div v-if="loading" class="row justify-center">
           <q-spinner size="md" color="primary" />
         </div>

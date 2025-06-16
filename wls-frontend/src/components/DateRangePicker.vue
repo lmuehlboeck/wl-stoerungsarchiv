@@ -22,7 +22,7 @@
       lazy-rules
       hide-bottom-space
     />
-    <q-btn rounded icon="event">
+    <q-btn flat rounded icon="event" color="primary">
       <q-popup-proxy cover transition-show="scale" transition-hide="scale">
         <q-date
           range

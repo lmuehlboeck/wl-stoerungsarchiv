@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StatisticsView from '../views/StatisticsView.vue'
-import InfosView from '../views/InfosView.vue'
-import ImprintView from '../views/ImprintView.vue'
+import ContactView from '../views/ContactView.vue'
 import DisturbanceView from '../views/DisturbanceView.vue'
 
 const routes = [
@@ -17,14 +16,9 @@ const routes = [
     component: StatisticsView
   },
   {
-    path: '/infos',
-    name: 'infos',
-    component: InfosView
-  },
-  {
-    path: '/impressum',
-    name: 'imprint',
-    component: ImprintView
+    path: '/kontakt',
+    name: 'contact',
+    component: ContactView
   },
   {
     path: '/stoerung/:id',
