@@ -20,8 +20,8 @@
       </q-card-section>
       <q-card-section :class="expand ? '' : 'gt-sm'">
         <q-checkbox
-          v-model="onlyClosed"
-          label="Nur geschlossene Störungen"
+          v-model="onlyActive"
+          label="Nur offene Störungen"
           @update:model-value="emitData()"
         />
         <q-select
@@ -330,7 +330,7 @@ export default {
     emitData() {
       const data = {
         orderBy: this.orderBy.order_id,
-        onlyClosed: this.onlyClosed,
+        onlyActive: this.onlyActive,
         fromDate: this.dates.from,
         toDate: this.dates.to,
         types: this.types,
@@ -341,8 +341,7 @@ export default {
 
     async fetchLines() {
       try {
-        const data = await this.$globals.fetch("/lines");
-        return data;
+        return await this.$globals.fetch("/lines");
       } catch (err) {
         console.log(err);
       }
@@ -351,7 +350,7 @@ export default {
 
     reset() {
       this.orderBy = this.ORDER_OPTIONS[0];
-      this.onlyClosed = false;
+      this.onlyActive = false;
       this.dates.from = this.$globals.defaultDate;
       this.dates.to = this.$globals.defaultDate;
       this.types = this.TYPE_OPTIONS.map((t) => t.value);
@@ -368,13 +367,15 @@ export default {
     this.lineOptions = await this.fetchLines();
     if (this.defaultParams !== undefined) {
       if ("orderBy" in this.defaultParams)
-        this.orderBy = this.ORDER_OPTIONS[this.defaultParams.orderBy];
-      if ("onlyClosed" in this.defaultParams)
-        this.onlyClosed = this.defaultParams.onlyClosed === "true";
+        this.orderBy = this.ORDER_OPTIONS.find(
+          (option) => option.order_id === this.defaultParams.orderBy
+        );
+      if ("onlyActive" in this.defaultParams)
+        this.onlyActive = this.defaultParams.onlyActive === "true";
       if ("fromDate" in this.defaultParams)
-        this.dates.fromDate = this.defaultParams.fromDate;
+        this.dates.from = this.defaultParams.fromDate;
       if ("toDate" in this.defaultParams)
-        this.dates.toDate = this.defaultParams.toDate;
+        this.dates.to = this.defaultParams.toDate;
       if ("types" in this.defaultParams) this.types = this.defaultParams.types;
       if ("lines" in this.defaultParams) this.lines = this.defaultParams.lines;
     }
@@ -390,7 +391,7 @@ export default {
     return {
       expand: false,
       orderBy: ORDER_OPTIONS[0],
-      onlyClosed: false,
+      onlyActive: false,
       dates: { from: this.$globals.defaultDate, to: this.$globals.defaultDate },
       types: TYPE_OPTIONS.map((t) => t.value),
       lineOptions: [],

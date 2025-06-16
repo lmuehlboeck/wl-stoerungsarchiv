@@ -46,7 +46,9 @@ export const globals = {
     }
     url = url.startsWith("/") ? this.apiUrl + url : url;
     try {
-      return (await fetch(url, options)).json();
+      const response = await fetch(url, options);
+      if (!response.ok) return null;
+      return response.json();
     } catch (err) {
       throw err instanceof TypeError ? "Keine Verbindung zur API" : err;
     }

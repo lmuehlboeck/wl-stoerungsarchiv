@@ -113,8 +113,8 @@ export default {
         if (params.lines.length > 0) {
           url += `&lines=${params.lines.toString()}`;
         }
-        if (params.onlyClosed) {
-          url += "&onlyClosed=true";
+        if (params.onlyActive) {
+          url += "&onlyActive=true";
         }
         return await this.$globals.fetch(url);
       } catch (err) {

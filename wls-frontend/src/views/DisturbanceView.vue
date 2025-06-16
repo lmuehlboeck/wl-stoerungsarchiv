@@ -43,8 +43,7 @@ export default {
   methods: {
     async fetchDisturbance(id) {
       try {
-        const data = await this.$globals.fetch(`/disturbances/${id}`);
-        return data.disturbance;
+        return await this.$globals.fetch(`/disturbances/${id}`);
       } catch (err) {
         console.log(err);
       }
