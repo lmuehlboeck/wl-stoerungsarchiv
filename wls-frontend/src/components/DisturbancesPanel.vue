@@ -26,7 +26,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div v-else>
+        <div>
           <div v-if="disturbances.length === 0" class="text-center text-grey">
             Keine Störungen passend zum gesetzten Filter gefunden
           </div>
@@ -42,7 +42,6 @@
                 :disturbance="item"
                 :expandable="item.descriptions.length > 1"
                 :expand="expandedDisturbances.includes(item.id)"
-                :getLineColor="getLineColor"
                 :showLink="true"
               />
             </div>
@@ -62,7 +61,8 @@ export default {
   inject: ["$globals"],
 
   props: {
-    getLineColor: Function,
+    loading: Boolean,
+    disturbances: Array
   },
 
   components: {
@@ -87,54 +87,18 @@ export default {
         this.expandedDisturbances.push(id);
       }
     },
-
-    async update(params) {
-      this.lastScrollPosition = window.html.scrollTop;
-      this.loading = true;
-      this.disturbances = await this.fetchDisturbances(params);
-      this.shownDisturbances = this.disturbances.slice(0, 50);
-    },
-
-    async fetchDisturbances(params) {
-      if (params.types.length === 0) {
-        return [];
-      }
-      try {
-        // date parsing
-        const fromDateArr = params.fromDate.split(".");
-        const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`;
-        const toDateArr = params.toDate.split(".");
-        const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`;
-        let url = `/disturbances?fromDate=${fromDate}&toDate=${toDate}&orderBy=${
-          params.orderBy
-        }&types=${params.types.toString()}`;
-        if (params.lines.length > 0) {
-          url += `&lines=${params.lines.toString()}`;
-        }
-        if (params.onlyActive) {
-          url += "&onlyActive=true";
-        }
-        return await this.$globals.fetch(url);
-      } catch (err) {
-        console.log(err);
-      }
-      return [];
-    },
   },
 
   data() {
     return {
-      disturbances: [],
       shownDisturbances: [],
-      loading: false,
       expandedDisturbances: ref([]),
-      lastScrollPosition: 0,
     };
   },
 
   watch: {
     disturbances() {
-      this.loading = false;
+      this.shownDisturbances = this.disturbances.slice(0, 50);
     },
   },
 };

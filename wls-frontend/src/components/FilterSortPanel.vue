@@ -19,14 +19,14 @@
             style="transition: 0.2s"
           />
         </div>
-        <div :class="expand ? 'q-mt-lg' : 'gt-sm'">
+        <div :class="expand ? 'q-mt-lg' : 'gt-sm q-mt-lg'">
           <q-checkbox
-            v-model="onlyActive"
+            :model-value="!!settings.onlyActive"
             label="Nur offene Störungen"
-            @update:model-value="emitData()"
+            @update:model-value="toggleOnlyActive()"
           />
           <q-select
-            v-model="orderBy"
+            v-model="settings.orderBy"
             :options="ORDER_OPTIONS"
             label="Sortieren nach"
             class="q-mb-md"
@@ -35,7 +35,8 @@
           />
           <div class="text-h6 q-mb-sm">Datum</div>
           <DateRangePicker
-            :value="dates"
+            :from="settings.fromDate"
+            :to="settings.toDate"
             class="col-6"
             @update:modelValue="updateDates"
           />
@@ -61,7 +62,7 @@
             </q-btn-group>
           </div>
           <q-option-group
-            v-model="types"
+            v-model="settings.types"
             :options="TYPE_OPTIONS"
             type="checkbox"
             class="q-ml-sm q-mb-sm"
@@ -89,7 +90,7 @@
               />
             </q-btn-group>
           </div>
-          <div v-if="lineOptions == null" class="text-center text-grey">
+          <div v-if="lineOptions.length === 0" class="text-center text-grey">
             Keine Verbindung zur API
           </div>
           <div v-for="type in LINE_TYPES" :key="type.type_id">
@@ -124,11 +125,11 @@
                 :style="`width: 50px; background: ${$globals.getLineColor(
                   line
                 )}; color: ${
-                  lines.includes(line.id)
+                  settings.lines.includes(line.id)
                     ? 'white'
                     : $globals.getLineColor(line)
                 };`"
-                :outline="!lines.includes(line.id)"
+                :outline="!settings.lines.includes(line.id)"
                 @click="toggleLine(line.id)"
               />
             </div>
@@ -180,7 +181,7 @@ const LINE_TYPES = [
   },
   {
     type_id: "Misc",
-    title: "Eingestellt & andere",
+    title: "Veraltet / sonstige",
   },
 ];
 const ORDER_OPTIONS = [
@@ -273,7 +274,9 @@ export default {
   inject: ["$globals"],
 
   props: {
-    defaultParams: Object,
+    defaultSettings: Object,
+    lineOptions: Array,
+    linesLoading: Boolean,
   },
 
   components: {
@@ -281,6 +284,11 @@ export default {
   },
 
   methods: {
+    toggleOnlyActive() {
+      this.settings.onlyActive = !this.settings.onlyActive;
+      this.emitData();
+    },
+
     validateDate(date) {
       return /^(((0?[1-9]|[12]\d|3[01])\.(0[13578]|[13578]|1[02])\.((1[6-9]|[2-9]\d)\d{2}))|((0?[1-9]|[12]\d|30)\.(0[13456789]|[13456789]|1[012])\.((1[6-9]|[2-9]\d)\d{2}))|((0?[1-9]|1\d|2[0-8])\.0?2\.((1[6-9]|[2-9]\d)\d{2}))|(29\.0?2\.((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$/.test(
         date
@@ -289,31 +297,32 @@ export default {
 
     updateDates(newDates) {
       if (this.validateDate(newDates.from) && this.validateDate(newDates.to)) {
-        this.dates = newDates;
+        this.settings.fromDate = newDates.from;
+        this.settings.toDate = newDates.to;
         this.emitData();
       }
     },
 
     selectAllTypes() {
-      this.types = ref(this.TYPE_OPTIONS.map((t) => t.value));
+      this.settings.types = ref(this.TYPE_OPTIONS.map((t) => t.value));
       this.emitData();
     },
 
     deselectAllTypes() {
-      this.types = ref([]);
+      this.settings.types = ref([]);
     },
 
     toggleLine(id) {
-      if (this.lines.includes(id)) {
-        this.lines.splice(this.lines.indexOf(id), 1);
+      if (this.settings.lines.includes(id)) {
+        this.settings.lines.splice(this.settings.lines.indexOf(id), 1);
       } else {
-        this.lines.push(id);
+        this.settings.lines.push(id);
       }
       this.emitData();
     },
 
     selectLines(type) {
-      let lines = this.lines;
+      let lines = this.settings.lines;
       if (type === undefined) {
         lines = lines.concat(this.lineOptions.map((l) => l.id));
       } else {
@@ -321,32 +330,30 @@ export default {
           this.lineOptions.filter((l) => l.type === type).map((l) => l.id)
         );
       }
-      this.lines = [...new Set(lines)];
+      this.settings.lines = [...new Set(lines)];
       this.emitData();
     },
 
     deselectLines(type) {
       if (type === undefined) {
-        this.lines = [];
+        this.settings.lines = [];
       } else {
         const toRemove = this.lineOptions
           .filter((l) => l.type === type)
           .map((l) => l.id);
-        this.lines = this.lines.filter((l) => !toRemove.includes(l));
-        this.emitData();
+        this.settings.lines = this.settings.lines.filter(
+          (l) => !toRemove.includes(l)
+        );
       }
+      this.emitData();
     },
 
     emitData() {
-      const data = {
-        orderBy: this.orderBy.order_id,
-        onlyActive: this.onlyActive,
-        fromDate: this.dates.from,
-        toDate: this.dates.to,
-        types: this.types,
-        lines: this.lines,
-      };
-      this.$emit("change", data);
+      if (this.settings.types.length === 0) return;
+      this.$emit("change", {
+        ...this.settings,
+        orderBy: this.settings.orderBy.order_id,
+      });
     },
 
     async fetchLines() {
@@ -358,14 +365,25 @@ export default {
       return null;
     },
 
+    setSettings(settings) {
+      if(!settings) return;
+      this.settings = {
+        orderBy: ORDER_OPTIONS[0],
+        onlyActive: false,
+        fromDate: this.$globals.defaultDate,
+        toDate: this.$globals.defaultDate,
+        types: TYPE_OPTIONS.map((t) => t.value),
+        lines: [],
+        ...settings,
+        ...("orderBy" in settings && {
+          orderBy: ORDER_OPTIONS.find((o) => o.order_id === settings.orderBy),
+        }),
+      };
+    },
+
     reset() {
-      this.orderBy = this.ORDER_OPTIONS[0];
-      this.onlyActive = false;
-      this.dates.from = this.$globals.defaultDate;
-      this.dates.to = this.$globals.defaultDate;
-      this.types = this.TYPE_OPTIONS.map((t) => t.value);
-      this.lines = [];
-      this.emitData();
+      this.setSettings({});
+      this.emitData()
     },
   },
 
@@ -373,26 +391,6 @@ export default {
     this.LINE_TYPES = LINE_TYPES;
     this.ORDER_OPTIONS = ORDER_OPTIONS;
     this.TYPE_OPTIONS = TYPE_OPTIONS;
-
-    this.lineOptions = await this.fetchLines();
-    if (this.defaultParams !== undefined) {
-      if ("orderBy" in this.defaultParams)
-        this.orderBy = this.ORDER_OPTIONS.find(
-          (option) => option.order_id === this.defaultParams.orderBy
-        );
-      if ("onlyActive" in this.defaultParams)
-        this.onlyActive = this.defaultParams.onlyActive === "true";
-      if ("fromDate" in this.defaultParams)
-        this.dates.from = this.defaultParams.fromDate;
-      if ("toDate" in this.defaultParams)
-        this.dates.to = this.defaultParams.toDate;
-      if ("types" in this.defaultParams) this.types = this.defaultParams.types;
-      if ("lines" in this.defaultParams) this.lines = this.defaultParams.lines;
-    }
-    if (this.lineOptions != null) {
-      this.emitData();
-    }
-    this.linesLoading = false;
   },
 
   emits: ["change"],
@@ -400,14 +398,22 @@ export default {
   data() {
     return {
       expand: false,
-      orderBy: ORDER_OPTIONS[0],
-      onlyActive: false,
-      dates: { from: this.$globals.defaultDate, to: this.$globals.defaultDate },
-      types: TYPE_OPTIONS.map((t) => t.value),
-      lineOptions: [],
-      linesLoading: true,
-      lines: [],
+      settings: {
+        orderBy: ORDER_OPTIONS[0],
+        onlyActive: false,
+        fromDate: this.$globals.defaultDate,
+        toDate: this.$globals.defaultDate,
+        types: TYPE_OPTIONS.map((t) => t.value),
+        lines: [],
+      },
     };
+  },
+
+  watch: {
+    defaultSettings(newVal) {
+      this.setSettings(newVal);
+      this.emitData();
+    },
   },
 };
 </script>

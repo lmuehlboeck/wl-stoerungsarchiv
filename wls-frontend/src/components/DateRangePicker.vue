@@ -3,8 +3,8 @@
     <q-input
       filled
       class="col"
-      @update:modelValue="onInputChange"
-      v-model="dates.from"
+      @update:modelValue="onFromInputChange"
+      :model-value="from"
       mask="##.##.####"
       label="Von"
       :rules="inputRules"
@@ -14,8 +14,8 @@
     <q-input
       filled
       class="col"
-      @update:modelValue="onInputChange"
-      v-model="dates.to"
+      @update:modelValue="onToInputChange"
+      :model-value="to"
       mask="##.##.####"
       label="Bis"
       :rules="inputRules"
@@ -41,40 +41,33 @@
 </template>
 
 <script>
-import { ref } from "vue";
-
 export default {
   name: "DateRangePicker",
 
   props: {
-    value: Object,
+    from: String,
+    to: String,
   },
 
   emits: ["update:modelValue"],
 
   methods: {
-    onInputChange(newDates) {
-      if (newDates.from === newDates.to) {
-        this.pickerDates = newDates.from;
-      } else {
-        this.pickerDates = newDates;
-      }
-      this.$emit("update:modelValue", newDates);
+    onFromInputChange(newDate) {
+      this.$emit("update:modelValue", { from: newDate, to: this.to });
+    },
+    onToInputChange(newDate) {
+      this.$emit("update:modelValue", { from: this.from, to: newDate });
     },
     onPickerChange(newDates) {
       if (newDates === null) return;
-      if (typeof newDates === "string") {
-        this.dates = { from: newDates, to: newDates };
-      } else {
-        this.dates = newDates;
-      }
-      this.$emit("update:modelValue", this.dates);
+      if (typeof newDates === "string")
+        this.$emit("update:modelValue", { from: newDates, to: newDates });
+      else this.$emit("update:modelValue", newDates);
     },
   },
 
   data() {
     return {
-      dates: ref(this.value),
       pickerDates: null,
       inputRules: [
         (v) =>

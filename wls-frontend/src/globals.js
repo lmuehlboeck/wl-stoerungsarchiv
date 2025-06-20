@@ -9,6 +9,7 @@ export const globals = {
       Tram: "red",
       Bus: "blue",
       Night: "purple",
+      Misc: "grey"
     };
     if (line.type === "Metro") {
       if (line.id.includes("U1")) {

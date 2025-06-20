@@ -6,10 +6,16 @@
     <div class="q-mx-auto col-8 row" style="max-width: 1100px">
       <FilterSortPanel
         class="col-md-4 col-12"
-        :defaultParams="FILTER_SORT_PARAMS"
+        :default-settings="filterSortSettings"
+        :line-options="lines"
+        :lines-loading="linesLoading"
         @change="updateDisturbances"
       />
-      <DisturbancesPanel class="col-md-8 col-12" ref="distPanel" />
+      <DisturbancesPanel
+        class="col-md-8 col-12"
+        :disturbances="disturbances"
+        :loading="disturbancesLoading"
+      />
     </div>
   </main>
 </template>
@@ -30,10 +36,12 @@ export default {
   },
 
   methods: {
-    updateDisturbances(params) {
+    async updateDisturbances(params) {
       this.$router.push({
         query: {
-          ...(params.orderBy !== 'StartedAtDesc' && { orderBy: params.orderBy }),
+          ...(params.orderBy !== "StartedAtDesc" && {
+            orderBy: params.orderBy,
+          }),
           ...(params.onlyActive && { onlyActive: params.onlyActive }),
           ...(params.fromDate !== this.$globals.defaultDate && {
             fromDate: params.fromDate,
@@ -46,13 +54,59 @@ export default {
           ...(params.lines.length > 0 && { lines: params.lines.toString() }),
         },
       });
-      this.$refs.distPanel.update(params);
+      await this.fetchDisturbances(params);
+    },
+
+    async fetchDisturbances(params) {
+      this.disturbancesLoading = true;
+      if (params.types.length === 0) {
+        this.disturbances = [];
+        return;
+      }
+      try {
+        // date parsing
+        const fromDateArr = params.fromDate.split(".");
+        const fromDate = `${fromDateArr[2]}-${fromDateArr[1]}-${fromDateArr[0]}`;
+        const toDateArr = params.toDate.split(".");
+        const toDate = `${toDateArr[2]}-${toDateArr[1]}-${toDateArr[0]}`;
+        let url = `/disturbances?fromDate=${fromDate}&toDate=${toDate}&orderBy=${
+          params.orderBy
+        }&types=${params.types.toString()}`;
+        if (params.lines.length > 0) {
+          url += `&lines=${params.lines.toString()}`;
+        }
+        if (params.onlyActive) {
+          url += "&onlyActive=true";
+        }
+        this.disturbances = (await this.$globals.fetch(url)).map((d) => ({
+          ...d,
+          lines: this.orderLines(d.lines),
+        }));
+      } catch (err) {
+        console.log(err);
+        this.disturbances = [];
+      }
+    },
+
+    async fetchLines() {
+      this.linesLoading = true;
+      try {
+        this.lines = await this.$globals.fetch("/lines");
+      } catch (err) {
+        console.log(err);
+      }
+      this.linesLoading = false;
+    },
+
+    orderLines(lines) {
+      return this.lines.filter((line) => lines.some((l) => l.id === line.id));
     },
   },
 
-  created() {
+  async created() {
+    await this.fetchLines();
     const q = this.$route.query;
-    this.FILTER_SORT_PARAMS = {
+    this.filterSortSettings = {
       ...q,
       ...("types" in q && { types: q.types.split(",") }),
       ...("lines" in q && { lines: q.lines.split(",") }),
@@ -61,8 +115,27 @@ export default {
 
   data() {
     return {
-      disturbances: null,
+      filterSortSettings: null,
+      disturbances: [],
+      disturbancesLoading: false,
+      lines: [],
+      linesLoading: false,
     };
+  },
+
+  watch: {
+    disturbances() {
+      this.disturbancesLoading = false;
+    },
+
+    $route(from, to) {
+      const q = this.$route.query;
+      this.filterSortSettings = {
+        ...q,
+        ...("types" in q && { types: q.types.split(",") }),
+        ...("lines" in q && { lines: q.lines.split(",") }),
+      };
+    }
   },
 };
 </script>

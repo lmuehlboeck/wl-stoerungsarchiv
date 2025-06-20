@@ -63,8 +63,8 @@
           >
         </li>
         <li>
-          <RouterLink class="q-py-lg full-width block" to="/impressum"
-            >Impressum</RouterLink
+          <RouterLink class="q-py-lg full-width block" to="/kontakt"
+            >Kontakt</RouterLink
           >
         </li>
       </ul>
