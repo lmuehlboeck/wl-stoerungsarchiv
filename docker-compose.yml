@@ -36,6 +36,8 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=schueler
+    networks:
+      - web
     expose:
       - 5432
 
