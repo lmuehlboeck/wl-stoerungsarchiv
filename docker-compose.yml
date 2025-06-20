@@ -3,7 +3,7 @@ services:
   wls-proxy:
     build:
       context: ./
-      dockerfile: ./nginx/Dockerfile
+      dockerfile: ./wls-proxy/Dockerfile
     networks:
       - web
     environment:
