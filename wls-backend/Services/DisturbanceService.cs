@@ -21,6 +21,11 @@ namespace wls_backend.Services
             {
                 return null;
             }
+            disturbance.Lines = disturbance.Lines
+                .OrderBy(l => l.Type)
+                .ThenBy(_context.LineOrderSelector)
+                .ThenBy(l => l.Id)
+                .ToList();
             return DisturbanceResponse.FromDomain(disturbance);
         }
 

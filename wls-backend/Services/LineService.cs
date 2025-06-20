@@ -17,16 +17,7 @@ namespace wls_backend.Services
             var lines = (await _context.Line
                 .ToListAsync())
                 .OrderBy(l => l.Type)
-                .ThenBy(l => {
-                    try
-                    {
-                        return int.Parse(string.Concat(l.Id.Where(char.IsDigit)));
-                    }
-                    catch
-                    {
-                        return int.MinValue;
-                    }
-                })
+                .ThenBy(_context.LineOrderSelector)
                 .ThenBy(l => l.Id)
                 .ToList();
             return lines.Select(LineResponse.FromDomain);

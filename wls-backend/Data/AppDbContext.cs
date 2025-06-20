@@ -22,7 +22,7 @@ namespace wls_backend.Data
                 .HasColumnType("timestamp without time zone");
 
             builder.Entity<DisturbanceDescription>()
-                .HasKey(e => new { e.DisturbanceId, e.Text });
+                .HasKey(e => new { e.DisturbanceId, e.Text, e.CreatedAt });
             builder.Entity<DisturbanceDescription>()
                 .Property(d => d.CreatedAt)
                 .HasColumnType("timestamp without time zone");
@@ -35,5 +35,17 @@ namespace wls_backend.Data
         public IQueryable<Disturbance> DisturbanceWithAll => Disturbance
             .Include(d => d.Descriptions.OrderBy(desc => desc.CreatedAt))
             .Include(d => d.Lines);
+
+        public Func<Line, int> LineOrderSelector = l =>
+        {
+            try
+            {
+                return int.Parse(string.Concat(l.Id.Where(char.IsDigit)));
+            }
+            catch
+            {
+                return int.MinValue;
+            }
+        };
     }
 }

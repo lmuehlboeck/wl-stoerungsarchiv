@@ -30,10 +30,9 @@ namespace wls_backend.Services
             using PeriodicTimer timer = new(TimeSpan.FromSeconds(period));
             do
             {
-                await UpdateDb();
                 try
                 {
-                    
+                    await UpdateDb();
                     _logger.LogInformation("Database updated successfully at {Time}", DateTime.Now);
                 }
                 catch (Exception ex)
@@ -57,8 +56,7 @@ namespace wls_backend.Services
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var openDisturbances = await context.Disturbance
-                .Include(d => d.Descriptions)
+            var openDisturbances = await context.DisturbanceWithAll
                 .Where(d => d.EndedAt == null)
                 .ToListAsync();
             var processedDisturbanceIds = new List<string>();
@@ -98,6 +96,10 @@ namespace wls_backend.Services
                         dbDisturbance.Title = responseDisturbance.Title;
                         dbDisturbance.Type = DisturbanceTypeHelper.FromTitle(dbDisturbance.Title);
                     }
+                    if (dbDisturbance.Lines.Count < responseDisturbance.Lines.Count)
+                    {
+                        dbDisturbance.Lines = responseDisturbance.Lines;
+                    }
                     if (dbDisturbance.Descriptions.LastOrDefault()?.Text != responseDisturbance.Descriptions.Last().Text)
                     {
                         dbDisturbance.Descriptions.Add(new DisturbanceDescription()
@@ -132,21 +134,7 @@ namespace wls_backend.Services
             var startedAt = DateTime.Parse(node["time"]!["start"]!.GetValue<string>());
             var lines = node["attributes"]!["relatedLineTypes"]!
                 .AsObject()
-                .Select(l =>
-                {
-                    var dbLine = context.Line.Find(l.Key);
-                    if (dbLine == null)
-                    {
-                        dbLine = new Line
-                        {
-                            Id = l.Key,
-                            Type = LineTypeHelper.FromType(l.Value!.GetValue<string>()),
-                            DisplayName = l.Key
-                        };
-                        context.Line.Add(dbLine);
-                    }
-                    return dbLine;
-                })
+                .Select(l => HandleLine(l.Key, l.Value!.GetValue<string>(), context))
                 .ToList();
             return new Disturbance
             {
@@ -162,6 +150,22 @@ namespace wls_backend.Services
                         }],
                 Lines = lines
             };
+        }
+
+        private Line HandleLine(string id, string type, AppDbContext context)
+        {
+            var dbLine = context.Line.Find(id);
+            if (dbLine == null)
+            {
+                dbLine = new Line
+                {
+                    Id = id,
+                    Type = LineTypeHelper.FromType(type),
+                    DisplayName = id
+                };
+                context.Line.Add(dbLine);
+            }
+            return dbLine;
         }
     }
 }
