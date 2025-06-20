@@ -1,31 +1,43 @@
-version: '3'
-
 services:
-  backend:
-    build: ./ktor-backend
-    networks:
-      - web
-    expose:
-      - 5000
-    environment:
-      - DB_HOST=database
-      - DB_PASSWORD=schueler
-    restart: unless-stopped
-  nginx:
+
+  wls-proxy:
     build:
       context: ./
       dockerfile: ./nginx/Dockerfile
     networks:
       - web
-    ports:
-      - 1337:80
-    depends_on:
-      - backend
     environment:
       - VIRTUAL_HOST=wls.byleo.net
       - LETSENCRYPT_HOST=wls.byleo.net
       - VIRTUAL_PORT=80
-    restart: unless-stopped
+    restart: always
+    depends_on:
+      - wls-backend
+
+  wls-backend:
+    build: ./wls-backend
+    networks:
+      - web
+    expose:
+      - 8080
+    environment:
+      - Db__Host=wls-db
+      - Db__User=postgres
+      - Db__Password=schueler
+    restart: always
+    depends_on:
+      - wls-db
+
+  wls-db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=schueler
+    expose:
+      - 5432
 
 networks:
   web:
