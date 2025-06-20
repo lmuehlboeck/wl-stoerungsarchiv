@@ -14,4 +14,8 @@ RUN dotnet publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app ./
+
+ENV TZ=Europe/Vienna
+RUN ln -sf /usr/share/zoneinfo/Europe/Vienna /etc/localtime
+
 ENTRYPOINT ["dotnet", "bin/Release/net8.0/wls-backend.dll"]
