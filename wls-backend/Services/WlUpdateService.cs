@@ -86,7 +86,9 @@ namespace wls_backend.Services
 
                 if (dbDisturbance == null)  
                 {
-                    dbDisturbance = context.Disturbance.Find(responseDisturbance.Id);
+                    dbDisturbance = context.DisturbanceWithAll
+                        .Where(d => d.Id == responseDisturbance.Id)
+                        .FirstOrDefault();
 
                     if (dbDisturbance == null)  // new disturbance
                     {
