@@ -84,33 +84,38 @@ namespace wls_backend.Services
                     responseDisturbance.Descriptions.Last().Text = string.Join(" / ", relatedDisturbances.Select(d => d.Descriptions.Last().Text));
                 }
 
-                if (dbDisturbance == null)  // new disturbance
+                if (dbDisturbance == null)  
                 {
-                    context.Disturbance.Add(responseDisturbance);
-                    continue;
-                }
-                else // existing disturbance (single)
-                {
-                    if (dbDisturbance.Title != responseDisturbance.Title)
+                    dbDisturbance = context.Disturbance.Find(responseDisturbance.Id);
+
+                    if (dbDisturbance == null)  // new disturbance
                     {
-                        dbDisturbance.Title = responseDisturbance.Title;
-                        dbDisturbance.Type = DisturbanceTypeHelper.FromTitle(dbDisturbance.Title);
+                        context.Disturbance.Add(responseDisturbance);
+                        continue;
                     }
-                    if (dbDisturbance.Lines.Count < responseDisturbance.Lines.Count)
-                    {
-                        dbDisturbance.Lines = responseDisturbance.Lines;
-                    }
-                    if (dbDisturbance.Descriptions.LastOrDefault()?.Text != responseDisturbance.Descriptions.Last().Text)
-                    {
-                        dbDisturbance.Descriptions.Add(new DisturbanceDescription()
-                        {
-                            DisturbanceId = dbDisturbance.Id,
-                            CreatedAt = DateTime.Now,
-                            Text = responseDisturbance.Descriptions.Last().Text
-                        });
-                    }
+
+                    dbDisturbance.EndedAt = null; // reset endedAt for existing disturbances
                 }
                 
+                // existing disturbance
+                if (dbDisturbance.Title != responseDisturbance.Title)
+                {
+                    dbDisturbance.Title = responseDisturbance.Title;
+                    dbDisturbance.Type = DisturbanceTypeHelper.FromTitle(dbDisturbance.Title);
+                }
+                if (dbDisturbance.Lines.Count < responseDisturbance.Lines.Count)
+                {
+                    dbDisturbance.Lines = responseDisturbance.Lines;
+                }
+                if (dbDisturbance.Descriptions.LastOrDefault()?.Text != responseDisturbance.Descriptions.Last().Text)
+                {
+                    dbDisturbance.Descriptions.Add(new DisturbanceDescription()
+                    {
+                        DisturbanceId = dbDisturbance.Id,
+                        CreatedAt = DateTime.Now,
+                        Text = responseDisturbance.Descriptions.Last().Text
+                    });
+                }
             }
 
             // close disturbances that are no longer present in the response
