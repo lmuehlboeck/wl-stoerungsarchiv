@@ -4,6 +4,8 @@ Das Wiener Linien Störungsarchiv speichert alle Störungen der Wiener Linien, u
 
 Website: https://wls.byleo.net/
 
+![Screenshot der Website](./wls-screenshot.png)
+
 ## API
 
 Alle Daten sind über eine REST-API abrufbar.
