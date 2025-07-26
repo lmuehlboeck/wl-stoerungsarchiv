@@ -11,7 +11,7 @@
         Leo Mühlböck<br />
         1210 Wien <br />
         Österreich <br />
-        E-Mail: <a href="mailto:mail@byleo.net">mail@byleo.net</a>
+        E-Mail: <a href="mailto:contact@byleo.net">contact@byleo.net</a>
       </q-card-section>
       <q-card-section>
         <h2 class="text-h4 q-mb-md">Funktionsweise</h2>
