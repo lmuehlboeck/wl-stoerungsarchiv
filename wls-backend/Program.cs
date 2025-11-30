@@ -34,14 +34,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 );
 
-FirebaseApp.Create(new AppOptions()
+try
 {
-    Credential = GoogleCredential.FromFile(builder.Configuration["FirebaseCredentials:FilePath"]),
-});
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromFile(builder.Configuration["FirebaseCredentials:FilePath"]),
+    });
+    builder.Services.AddTransient<SubscriptionService>();
+}
+catch (FileNotFoundException exc)
+{
+    Console.WriteLine("Skipping subscription service, no firebase credentials provided.");
+}
+
 
 builder.Services.AddTransient<DisturbanceService>();
 builder.Services.AddTransient<LineService>();
-builder.Services.AddTransient<SubscriptionService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHostedService<WlUpdateService>();

@@ -55,7 +55,11 @@ namespace wls_backend.Services
 
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var subscriptionService = scope.ServiceProvider.GetRequiredService<SubscriptionService>();
+            SubscriptionService? subscriptionService = null;
+            try
+            {
+                subscriptionService = scope.ServiceProvider.GetRequiredService<SubscriptionService>();
+            } catch(InvalidOperationException) {  } // no subscription service (firebase credentials missing)
 
             var disturbanceEvents = new List<DisturbanceEvent>();
 
@@ -90,8 +94,7 @@ namespace wls_backend.Services
                 if (dbDisturbance == null)
                 {
                     dbDisturbance = context.DisturbanceWithAll
-                        .Where(d => d.Id == responseDisturbance.Id)
-                        .FirstOrDefault();
+                        .FirstOrDefault(d => d.Id == responseDisturbance.Id);
 
                     if (dbDisturbance == null)  // new disturbance
                     {
@@ -137,7 +140,7 @@ namespace wls_backend.Services
 
             await context.SaveChangesAsync();
 
-            await subscriptionService.SendNotifications(disturbanceEvents);
+            if (subscriptionService != null) await subscriptionService.SendNotifications(disturbanceEvents);
         }
 
         private Disturbance DisturbanceFromJsonNode(JsonNode node, AppDbContext context)
