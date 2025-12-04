@@ -5,13 +5,13 @@ namespace wls_backend.Models.DTOs
 {
     public class DisturbanceResponse
     {
-        required public string Id { get; set; }
-        required public string Title { get; set; }
-        required public DisturbanceType Type { get; set; }
-        required public DateTime StartedAt { get; set; }
+        public required string Id { get; set; }
+        public required string Title { get; set; }
+        public required DisturbanceType Type { get; set; }
+        public required DateTime StartedAt { get; set; }
         public DateTime? EndedAt { get; set; } = null;
-        required public ICollection<DisturbanceDescriptionResponse> Descriptions { get; set; } = [];
-        required public ICollection<LineResponse> Lines { get; set; } = [];
+        public required ICollection<DisturbanceDescriptionResponse> Descriptions { get; set; } = [];
+        public required ICollection<LineResponse> Lines { get; set; } = [];
 
         public static DisturbanceResponse FromDomain(Disturbance disturbance)
         {
