@@ -99,7 +99,7 @@ namespace wls_backend.Data
                 OrderType.StartedAtDesc => query.OrderByDescending(d => d.StartedAt),
                 OrderType.EndedAtAsc => query.OrderBy(d => d.EndedAt),
                 OrderType.EndedAtDesc => query.OrderByDescending(d => d.EndedAt),
-                _ => throw new NotImplementedException(),
+                _ => throw new NotSupportedException(),
             };
         }
     }
