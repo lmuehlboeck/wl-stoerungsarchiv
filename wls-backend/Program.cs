@@ -42,7 +42,7 @@ try
     });
     builder.Services.AddTransient<SubscriptionService>();
 }
-catch (FileNotFoundException exc)
+catch (FileNotFoundException)
 {
     Console.WriteLine("Skipping subscription service, no firebase credentials provided.");
 }
@@ -50,6 +50,7 @@ catch (FileNotFoundException exc)
 
 builder.Services.AddTransient<DisturbanceService>();
 builder.Services.AddTransient<LineService>();
+builder.Services.AddTransient<StatisticsService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHostedService<WlUpdateService>();
@@ -59,7 +60,7 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(AllowLocalOrigins,
-            builder => builder.WithOrigins("http://localhost:8080", "http://localhost:8081")
+            b => b.WithOrigins("http://localhost:8080", "http://localhost:8081")
                               .AllowAnyMethod()
                               .AllowAnyHeader());
     });
@@ -77,9 +78,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var Scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var context = Scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
 }
 

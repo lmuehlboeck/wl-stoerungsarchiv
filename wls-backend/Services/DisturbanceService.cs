@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using wls_backend.Data;
-using wls_backend.Models.Domain;
 using wls_backend.Models.DTOs;
-using wls_backend.Models.Enums;
 
 namespace wls_backend.Services
 {
@@ -31,47 +29,10 @@ namespace wls_backend.Services
             return DisturbanceResponse.FromDomain(disturbance);
         }
 
-        public async Task<IEnumerable<DisturbanceResponse>> GetDisturbances(DisturbanceFilterRequest filter)
+        public async Task<IEnumerable<DisturbanceResponse>> GetDisturbances(DisturbanceFilter filter)
         {
-            var disturbances = await FilterDisturbances(_context.Disturbance, filter).ToListAsync();
+            var disturbances = await _context.DisturbanceFiltered(filter).ToListAsync();
             return disturbances.Select(DisturbanceResponse.FromDomain);
-        }
-
-        public IQueryable<Disturbance> FilterDisturbances(IQueryable<Disturbance> disturbances,
-            DisturbanceFilterRequest filter)
-        {
-            var fromDate = filter.FromDate.ToDateTime(TimeOnly.MinValue);
-            var toDate = filter.ToDate.ToDateTime(TimeOnly.MaxValue);
-            var query = disturbances.Where(d => (d.StartedAt >= fromDate && d.StartedAt <= toDate)
-                                                || ((d.EndedAt ?? DateTime.Now) >= fromDate &&
-                                                    (d.EndedAt ?? DateTime.Now) <= toDate));
-
-            if (!string.IsNullOrWhiteSpace(filter.Lines))
-            {
-                var lines = filter.Lines.Split(',').Select(l => l.Trim()).ToList();
-                query = query.Where(d => d.Lines.Any(l => lines.Contains(l.Id)));
-            }
-
-            if (!string.IsNullOrWhiteSpace(filter.Types))
-            {
-                var types = filter.Types.Split(',')
-                    .Select(t => Enum.Parse<DisturbanceType>(t.Trim())).ToList();
-                query = query.Where(d => types.Contains(d.Type));
-            }
-
-            if (filter.OnlyActive)
-            {
-                query = query.Where(d => d.EndedAt == null);
-            }
-
-            return filter.OrderBy switch
-            {
-                OrderType.StartedAtAsc => query.OrderBy(d => d.StartedAt),
-                OrderType.StartedAtDesc => query.OrderByDescending(d => d.StartedAt),
-                OrderType.EndedAtAsc => query.OrderBy(d => d.EndedAt),
-                OrderType.EndedAtDesc => query.OrderByDescending(d => d.EndedAt),
-                _ => throw new NotImplementedException(),
-            };
         }
     }
 }
