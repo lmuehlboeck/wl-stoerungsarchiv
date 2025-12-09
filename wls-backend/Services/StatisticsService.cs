@@ -40,7 +40,7 @@ public class StatisticsService
             TimeUnit.Hour => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
                 ? 0
                 : d.StartedAt.Hour,
-            _ =>  throw new NotSupportedException()
+            _ => throw new NotSupportedException()
         };
         return request.ValueAxis switch
         {

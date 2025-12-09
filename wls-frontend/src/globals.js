@@ -56,4 +56,113 @@ export const globals = {
       throw err instanceof TypeError ? "Keine Verbindung zur API" : err;
     }
   },
+
+  ORDER_OPTIONS: [
+    {
+      label: "Startzeit - neueste zuerst",
+      order_id: "StartedAtDesc",
+    },
+    {
+      label: "Startzeit - älteste zuerst",
+      order_id: "StartedAtAsc",
+    },
+    {
+      label: "Endzeit - neueste zuerst",
+      order_id: "EndedAtDesc",
+    },
+    {
+      label: "Endzeit - älteste zuerst",
+      order_id: "EndedAtAsc",
+    },
+  ],
+
+  TYPE_OPTIONS: [
+    {
+      label: "Verspätungen",
+      value: "Delay",
+    },
+    {
+      label: "Verkehrsunfälle",
+      value: "Accident",
+    },
+    {
+      label: "Rettungseinsätze",
+      value: "AmbulanceOperation",
+    },
+    {
+      label: "Feuerwehreinsätze",
+      value: "FireDepartmentOperation",
+    },
+    {
+      label: "Polizeieinsätze",
+      value: "PoliceOperation",
+    },
+    {
+      label: "Falschparker",
+      value: "ParkingOffender",
+    },
+    {
+      label: "Schadhafte Fahrzeuge",
+      value: "DefectiveVehicle",
+    },
+    {
+      label: "Fahrleitungsschäden",
+      value: "CatenaryDamage",
+    },
+    {
+      label: "Gleisschäden",
+      value: "TrackDamage",
+    },
+    {
+      label: "Signalstörungen",
+      value: "SignalDamage",
+    },
+    {
+      label: "Weichenstörungen",
+      value: "SwitchDamage",
+    },
+    {
+      label: "Bauarbeiten",
+      value: "ConstructionWork",
+    },
+    {
+      label: "Demonstrationen",
+      value: "Demonstration",
+    },
+    {
+      label: "Veranstaltungen",
+      value: "Event",
+    },
+    {
+      label: "Witterungsbedingt",
+      value: "Weather",
+    },
+    {
+      label: "Sonstiges",
+      value: "Misc",
+    },
+  ],
+
+  LINE_TYPES: [
+    {
+      type_id: "Metro",
+      title: "U-Bahn",
+    },
+    {
+      type_id: "Tram",
+      title: "Straßenbahn",
+    },
+    {
+      type_id: "Bus",
+      title: "Bus",
+    },
+    {
+      type_id: "Night",
+      title: "Nightline",
+    },
+    {
+      type_id: "Misc",
+      title: "Veraltet / sonstige",
+    },
+  ],
 };
