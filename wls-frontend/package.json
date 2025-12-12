@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "chart.js": "^4.5.1",
     "core-js": "^3.8.3",
     "quasar": "^2.0.0",
     "vue": "^3.2.13",
+    "vue-chartjs": "^5.3.3",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {

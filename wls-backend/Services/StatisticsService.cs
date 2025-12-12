@@ -44,7 +44,7 @@ public class StatisticsService
         };
         return request.ValueAxis switch
         {
-            StatisticsValueAxis.NumberDisturbances => new StatisticsResponse
+            StatisticsValueAxis.Count => new StatisticsResponse
             {
                 ByTime =
                     await query.GroupBy(timeSelector)
@@ -58,7 +58,7 @@ public class StatisticsService
                     .Select(l => new DataPoint { X = l.Key, Y = l.Count() })
                     .ToListAsync(),
             },
-            StatisticsValueAxis.DurationDisturbed => new StatisticsResponse
+            StatisticsValueAxis.Duration => new StatisticsResponse
             {
                 ByTime = await query.GroupBy(timeSelector)
                     .Select(d => new DataPoint

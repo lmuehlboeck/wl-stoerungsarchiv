@@ -22,7 +22,9 @@
   </div>
   <q-option-group
     :model-value="types"
-    :options="$globals.TYPE_OPTIONS"
+    :options="$globals.TYPE_OPTIONS.filter(
+      (t) => !exclude.includes(t.value)
+    )"
     type="checkbox"
     class="q-ml-sm q-mb-sm"
     @update:model-value="update"
@@ -39,6 +41,10 @@ export default {
     types: {
       type: Object,
       required: true,
+    },
+    exclude: {
+      type: Array,
+      default: () => [],
     },
   },
 

@@ -165,4 +165,15 @@ export const globals = {
       title: "Veraltet / sonstige",
     },
   ],
+
+  VALUE_AXIS_OPTIONS: [
+    {
+      label: "Anzahl der Störungen",
+      value: "Count",
+    },
+    {
+      label: "Dauer der Störungen (Stunden)",
+      value: "Duration",
+    },
+  ]
 };
