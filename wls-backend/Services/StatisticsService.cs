@@ -26,18 +26,18 @@ public class StatisticsService
             FromDate = request.FromDate,
             ToDate = request.ToDate,
         }).Where(d => d.Type != DisturbanceType.ConstructionWork);
-        Expression<Func<Disturbance, int>> timeSelector = request.TimeUnit switch
+        Expression<Func<Disturbance, int>> timeSelector = request.TimeFrame switch
         {
-            TimeUnit.Year => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
+            TimeFrame.Year => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
                 ? request.FromDate.Year
                 : d.StartedAt.Year,
-            TimeUnit.Month => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
+            TimeFrame.Month => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
                 ? request.FromDate.Month
                 : d.StartedAt.Month,
-            TimeUnit.Day => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
-                ? request.FromDate.Day
-                : d.StartedAt.Day,
-            TimeUnit.Hour => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
+            TimeFrame.Weekday => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
+                ? (int)request.FromDate.DayOfWeek
+                : (int)d.StartedAt.DayOfWeek,
+            TimeFrame.Hour => d => d.StartedAt < request.FromDate.ToDateTime(TimeOnly.MinValue)
                 ? 0
                 : d.StartedAt.Hour,
             _ => throw new NotSupportedException()

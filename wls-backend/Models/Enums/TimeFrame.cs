@@ -1,9 +1,9 @@
 namespace wls_backend.Models.Enums;
 
-public enum TimeUnit
+public enum TimeFrame
 {
     Year,
     Month,
-    Day,
+    Weekday,
     Hour
 }
