@@ -175,5 +175,49 @@ export const globals = {
       label: "Dauer der Störungen (Stunden)",
       value: "Duration",
     },
-  ]
+  ],
+
+  TIME_FRAME_OPTIONS: [
+    {
+      label: "Jahre",
+      value: "Year",
+    },
+    {
+      label: "Monate",
+      value: "Month",
+    },
+    {
+      label: "Wochentage",
+      value: "Weekday",
+    },
+    {
+      label: "Stunden",
+      value: "Hour",
+    },
+  ],
+
+  MONTH_NAMES: [
+    "Jan",
+    "Feb",
+    "Mär",
+    "Apr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Dez",
+  ],
+
+  WEEKDAY_NAMES: [
+    "So",
+    "Mo",
+    "Di",
+    "Mi",
+    "Do",
+    "Fr",
+    "Sa",
+  ],
 };

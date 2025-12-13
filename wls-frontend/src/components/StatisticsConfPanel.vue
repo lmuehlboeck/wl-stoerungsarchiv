@@ -28,6 +28,14 @@
             @update:model-value="emitData()"
             filled
           />
+          <q-select
+            v-model="settings.timeFrame"
+            :options="$globals.TIME_FRAME_OPTIONS"
+            label="Zeitrahmen"
+            class="q-mb-md"
+            @update:model-value="emitData()"
+            filled
+          />
           <div class="text-h6 q-mb-sm">Datum</div>
           <DateRangePicker
             :from="settings.fromDate"
@@ -103,6 +111,7 @@ export default {
       this.$emit("change", {
         ...this.settings,
         valueAxis: this.settings.valueAxis.value,
+        timeFrame: this.settings.timeFrame.value,
       });
     },
 
@@ -110,6 +119,7 @@ export default {
       if (!settings) return;
       this.settings = {
         valueAxis: this.$globals.VALUE_AXIS_OPTIONS[0],
+        timeFrame: this.$globals.TIME_FRAME_OPTIONS[0],
         fromDate: this.$globals.defaultDate,
         toDate: this.$globals.defaultDate,
         types: this.$globals.TYPE_OPTIONS.map((t) => t.value),
@@ -118,6 +128,11 @@ export default {
         ...("valueAxis" in settings && {
           valueAxis: this.$globals.VALUE_AXIS_OPTIONS.find(
             (o) => o.value === settings.valueAxis
+          ),
+        }),
+        ...("timeFrame" in settings && {
+          timeFrame: this.$globals.TIME_FRAME_OPTIONS.find(
+            (o) => o.value === settings.timeFrame
           ),
         }),
       };
@@ -136,6 +151,7 @@ export default {
       expand: false,
       settings: {
         valueAxis: this.$globals.VALUE_AXIS_OPTIONS[0],
+        timeFrame: this.$globals.TIME_FRAME_OPTIONS[0],
         onlyActive: false,
         fromDate: this.$globals.defaultDate,
         toDate: this.$globals.defaultDate,
