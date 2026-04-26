@@ -28,20 +28,20 @@
             @update:model-value="emitData()"
             filled
           />
-          <q-select
-            v-model="settings.timeFrame"
-            :options="$globals.TIME_FRAME_OPTIONS"
-            label="Zeitrahmen"
-            class="q-mb-md"
-            @update:model-value="emitData()"
-            filled
-          />
           <div class="text-h6 q-mb-sm">Datum</div>
           <DateRangePicker
             :from="settings.fromDate"
             :to="settings.toDate"
             class="col-6"
             @update:modelValue="updateDates"
+          />
+          <q-select
+            v-model="settings.timeFrame"
+            :options="$globals.TIME_FRAME_OPTIONS"
+            label="Zeitraum"
+            class="q-mb-md"
+            @update:model-value="emitData()"
+            filled
           />
 
           <TypeSelect v-model:types="settings.types" :exclude="['ConstructionWork']" />

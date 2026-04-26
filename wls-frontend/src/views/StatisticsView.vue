@@ -82,7 +82,7 @@
           </q-card-section>
         </q-card>
         <q-card class="bg-white q-pa-sm">
-          <q-card-section style="height: 1000px;">
+          <q-card-section :style="{ height: (statistics.byLine.length * 30 + 100).toString() + 'px' }">
             <Bar
               :data="{
                 datasets: [{ data: statistics.byLine.map((d) => d.y) }],
@@ -220,7 +220,6 @@ export default {
         statistics.byType.sort((a, b) => b.y - a.y);
 
         statistics.byLine.sort((a, b) => b.y - a.y);
-        statistics.byLine = statistics.byLine.slice(0, 20);
 
         this.statistics = statistics;
       } catch (err) {
