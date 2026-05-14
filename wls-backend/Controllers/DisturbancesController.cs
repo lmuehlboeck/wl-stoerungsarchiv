@@ -27,7 +27,7 @@ namespace wls_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DisturbanceResponse>>> GetDisturbances([FromQuery] DisturbanceFilterRequest filter)
+        public async Task<ActionResult<IEnumerable<DisturbanceResponse>>> GetDisturbances([FromQuery] DisturbanceFilter filter)
         {
             try
             {

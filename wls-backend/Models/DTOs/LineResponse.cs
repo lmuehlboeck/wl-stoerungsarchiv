@@ -5,9 +5,9 @@ namespace wls_backend.Models.DTOs
 {
     public class LineResponse
     {
-        required public string Id { get; set; }
-        required public LineType Type { get; set; }
-        required public string DisplayName { get; set; }
+        public required string Id { get; set; }
+        public required LineType Type { get; set; }
+        public required string DisplayName { get; set; }
 
         public static LineResponse FromDomain(Line line)
         {

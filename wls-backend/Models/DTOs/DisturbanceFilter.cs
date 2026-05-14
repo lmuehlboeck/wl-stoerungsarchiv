@@ -2,7 +2,7 @@
 
 namespace wls_backend.Models.DTOs
 {
-    public class DisturbanceFilterRequest
+    public class DisturbanceFilter
     {
         public string Lines { get; set; } = "";
         public string Types { get; set; } = "";

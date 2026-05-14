@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using wls_backend.Models.Domain;
+using wls_backend.Models.DTOs;
+using wls_backend.Models.Enums;
 
 namespace wls_backend.Data
 {
@@ -53,7 +55,7 @@ namespace wls_backend.Data
             .Include(d => d.Descriptions.OrderBy(desc => desc.CreatedAt))
             .Include(d => d.Lines);
 
-        public Func<Line, int> LineOrderSelector = l =>
+        public readonly Func<Line, int> LineOrderSelector = l =>
         {
             try
             {
@@ -64,5 +66,41 @@ namespace wls_backend.Data
                 return int.MinValue;
             }
         };
+        
+        public IQueryable<Disturbance> DisturbanceFiltered(DisturbanceFilter filter)
+        {
+            var fromDate = filter.FromDate.ToDateTime(TimeOnly.MinValue);
+            var toDate = filter.ToDate.ToDateTime(TimeOnly.MaxValue);
+            var query = DisturbanceWithAll.Where(d => (d.StartedAt >= fromDate && d.StartedAt <= toDate)
+                                                || ((d.EndedAt ?? DateTime.Now) >= fromDate &&
+                                                    (d.EndedAt ?? DateTime.Now) <= toDate));
+
+            if (!string.IsNullOrWhiteSpace(filter.Lines))
+            {
+                var lines = filter.Lines.Split(',').Select(l => l.Trim()).ToList();
+                query = query.Where(d => d.Lines.Any(l => lines.Contains(l.Id)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.Types))
+            {
+                var types = filter.Types.Split(',')
+                    .Select(t => Enum.Parse<DisturbanceType>(t.Trim())).ToList();
+                query = query.Where(d => types.Contains(d.Type));
+            }
+
+            if (filter.OnlyActive)
+            {
+                query = query.Where(d => d.EndedAt == null);
+            }
+
+            return filter.OrderBy switch
+            {
+                OrderType.StartedAtAsc => query.OrderBy(d => d.StartedAt),
+                OrderType.StartedAtDesc => query.OrderByDescending(d => d.StartedAt),
+                OrderType.EndedAtAsc => query.OrderBy(d => d.EndedAt),
+                OrderType.EndedAtDesc => query.OrderByDescending(d => d.EndedAt),
+                _ => throw new NotSupportedException(),
+            };
+        }
     }
 }

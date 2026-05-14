@@ -55,7 +55,11 @@ namespace wls_backend.Services
 
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var subscriptionService = scope.ServiceProvider.GetRequiredService<SubscriptionService>();
+            SubscriptionService? subscriptionService = null;
+            try
+            {
+                subscriptionService = scope.ServiceProvider.GetRequiredService<SubscriptionService>();
+            } catch(InvalidOperationException) {  } // no subscription service (firebase credentials missing)
 
             var disturbanceEvents = new List<DisturbanceEvent>();
 
@@ -84,14 +88,13 @@ namespace wls_backend.Services
                 if (relatedDisturbances.Count > 1)
                 {
                     responseDisturbance.Lines = relatedDisturbances.SelectMany(d => d.Lines).Distinct().ToList();
-                    responseDisturbance.Descriptions.Last().Text = string.Join(" / ", relatedDisturbances.Select(d => d.Descriptions.Last().Text));
+                    responseDisturbance.Descriptions = relatedDisturbances.SelectMany(d => d.Descriptions).ToList();
                 }
 
                 if (dbDisturbance == null)
                 {
                     dbDisturbance = context.DisturbanceWithAll
-                        .Where(d => d.Id == responseDisturbance.Id)
-                        .FirstOrDefault();
+                        .FirstOrDefault(d => d.Id == responseDisturbance.Id);
 
                     if (dbDisturbance == null)  // new disturbance
                     {
@@ -114,15 +117,15 @@ namespace wls_backend.Services
                 {
                     dbDisturbance.Lines = responseDisturbance.Lines;
                 }
-                if (dbDisturbance.Descriptions.LastOrDefault()?.Text != responseDisturbance.Descriptions.Last().Text)
+                foreach (var newDescription in responseDisturbance.Descriptions.Where(resD => dbDisturbance.Descriptions.All(dbD => resD.Text != dbD.Text)))
                 {
-                    var newDescription = new DisturbanceDescription()
+                    dbDisturbance.Descriptions.Add(new DisturbanceDescription()
                     {
                         DisturbanceId = dbDisturbance.Id,
                         CreatedAt = DateTime.Now,
-                        Text = responseDisturbance.Descriptions.Last().Text
-                    };
-                    dbDisturbance.Descriptions.Add(newDescription);
+                        Text = newDescription.Text
+                    });
+                    
                     disturbanceEvents.Add(new DisturbanceEvent(EventType.Updated, dbDisturbance, newDescription.Text));
                 }
             }
@@ -137,7 +140,7 @@ namespace wls_backend.Services
 
             await context.SaveChangesAsync();
 
-            await subscriptionService.SendNotifications(disturbanceEvents);
+            if (subscriptionService != null) await subscriptionService.SendNotifications(disturbanceEvents);
         }
 
         private Disturbance DisturbanceFromJsonNode(JsonNode node, AppDbContext context)

@@ -8,7 +8,7 @@
         >
           <div class="text-h5">
             <q-icon name="tune" color="primary" class="q-mr-sm" />
-            Sortieren & Filtern
+            Statistik anpassen
           </div>
           <q-btn
             flat
@@ -20,15 +20,10 @@
           />
         </div>
         <div :class="expand ? 'q-mt-lg' : 'gt-sm q-mt-lg'">
-          <q-checkbox
-            :model-value="!!settings.onlyActive"
-            label="Nur offene Störungen"
-            @update:model-value="toggleOnlyActive()"
-          />
           <q-select
-            v-model="settings.orderBy"
-            :options="$globals.ORDER_OPTIONS"
-            label="Sortieren nach"
+            v-model="settings.valueAxis"
+            :options="$globals.VALUE_AXIS_OPTIONS"
+            label="Werteachse"
             class="q-mb-md"
             @update:model-value="emitData()"
             filled
@@ -40,8 +35,16 @@
             class="col-6"
             @update:modelValue="updateDates"
           />
-          
-          <TypeSelect v-model:types="settings.types" />
+          <q-select
+            v-model="settings.timeFrame"
+            :options="$globals.TIME_FRAME_OPTIONS"
+            label="Zeitraum"
+            class="q-mb-md"
+            @update:model-value="emitData()"
+            filled
+          />
+
+          <TypeSelect v-model:types="settings.types" :exclude="['ConstructionWork']" />
 
           <LineSelect
             :lineOptions="lineOptions"
@@ -70,7 +73,7 @@ import LineSelect from "./LineSelect.vue";
 import TypeSelect from "./TypeSelect.vue";
 
 export default {
-  name: "FilterSortPanel",
+  name: "StatisticsPanel",
   inject: ["$globals"],
 
   props: {
@@ -107,22 +110,30 @@ export default {
       if (this.settings.types.length === 0) return;
       this.$emit("change", {
         ...this.settings,
-        orderBy: this.settings.orderBy.order_id,
+        valueAxis: this.settings.valueAxis.value,
+        timeFrame: this.settings.timeFrame.value,
       });
     },
 
     setSettings(settings) {
       if (!settings) return;
       this.settings = {
-        orderBy: this.$globals.ORDER_OPTIONS[0],
-        onlyActive: false,
+        valueAxis: this.$globals.VALUE_AXIS_OPTIONS[0],
+        timeFrame: this.$globals.TIME_FRAME_OPTIONS[0],
         fromDate: this.$globals.defaultDate,
         toDate: this.$globals.defaultDate,
         types: this.$globals.TYPE_OPTIONS.map((t) => t.value),
         lines: [],
         ...settings,
-        ...("orderBy" in settings && {
-          orderBy: this.$globals.ORDER_OPTIONS.find((o) => o.order_id === settings.orderBy),
+        ...("valueAxis" in settings && {
+          valueAxis: this.$globals.VALUE_AXIS_OPTIONS.find(
+            (o) => o.value === settings.valueAxis
+          ),
+        }),
+        ...("timeFrame" in settings && {
+          timeFrame: this.$globals.TIME_FRAME_OPTIONS.find(
+            (o) => o.value === settings.timeFrame
+          ),
         }),
       };
     },
@@ -139,7 +150,8 @@ export default {
     return {
       expand: false,
       settings: {
-        orderBy: this.$globals.ORDER_OPTIONS[0],
+        valueAxis: this.$globals.VALUE_AXIS_OPTIONS[0],
+        timeFrame: this.$globals.TIME_FRAME_OPTIONS[0],
         onlyActive: false,
         fromDate: this.$globals.defaultDate,
         toDate: this.$globals.defaultDate,

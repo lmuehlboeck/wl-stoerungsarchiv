@@ -7,6 +7,7 @@ namespace wls_backend.Services
     public class LineService
     {
         private readonly AppDbContext _context;
+
         public LineService(AppDbContext context)
         {
             _context = context;
@@ -15,7 +16,8 @@ namespace wls_backend.Services
         public async Task<IEnumerable<LineResponse>> GetLines()
         {
             var lines = (await _context.Line
-                .ToListAsync())
+                    .Where(l => l.DisplayName != "")
+                    .ToListAsync())
                 .OrderBy(l => l.Type)
                 .ThenBy(_context.LineOrderSelector)
                 .ThenBy(l => l.Id)
