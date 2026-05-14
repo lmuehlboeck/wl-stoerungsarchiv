@@ -179,20 +179,20 @@ export const globals = {
 
   TIME_FRAME_OPTIONS: [
     {
-      label: "Jahre",
-      value: "Year",
-    },
-    {
-      label: "Monate",
-      value: "Month",
+      label: "Stunden",
+      value: "Hour",
     },
     {
       label: "Wochentage",
       value: "Weekday",
     },
     {
-      label: "Stunden",
-      value: "Hour",
+      label: "Monate",
+      value: "Month",
+    },
+    {
+      label: "Jahre",
+      value: "Year",
     },
   ],
 

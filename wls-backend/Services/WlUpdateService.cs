@@ -88,7 +88,7 @@ namespace wls_backend.Services
                 if (relatedDisturbances.Count > 1)
                 {
                     responseDisturbance.Lines = relatedDisturbances.SelectMany(d => d.Lines).Distinct().ToList();
-                    responseDisturbance.Descriptions.Last().Text = string.Join(" / ", relatedDisturbances.Select(d => d.Descriptions.Last().Text));
+                    responseDisturbance.Descriptions = relatedDisturbances.SelectMany(d => d.Descriptions).ToList();
                 }
 
                 if (dbDisturbance == null)
@@ -117,15 +117,15 @@ namespace wls_backend.Services
                 {
                     dbDisturbance.Lines = responseDisturbance.Lines;
                 }
-                if (dbDisturbance.Descriptions.LastOrDefault()?.Text != responseDisturbance.Descriptions.Last().Text)
+                foreach (var newDescription in responseDisturbance.Descriptions.Where(resD => dbDisturbance.Descriptions.All(dbD => resD.Text != dbD.Text)))
                 {
-                    var newDescription = new DisturbanceDescription()
+                    dbDisturbance.Descriptions.Add(new DisturbanceDescription()
                     {
                         DisturbanceId = dbDisturbance.Id,
                         CreatedAt = DateTime.Now,
-                        Text = responseDisturbance.Descriptions.Last().Text
-                    };
-                    dbDisturbance.Descriptions.Add(newDescription);
+                        Text = newDescription.Text
+                    });
+                    
                     disturbanceEvents.Add(new DisturbanceEvent(EventType.Updated, dbDisturbance, newDescription.Text));
                 }
             }

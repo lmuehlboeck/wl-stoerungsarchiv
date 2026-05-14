@@ -157,7 +157,7 @@ export default {
           ...(params.valueAxis !== "Count" && {
             valueAxis: params.valueAxis,
           }),
-          ...(params.timeFrame !== "Year" && {
+          ...(params.timeFrame !== "Hour" && {
             timeFrame: params.timeFrame,
           }),
           ...(params.fromDate !== this.$globals.defaultDate && {
